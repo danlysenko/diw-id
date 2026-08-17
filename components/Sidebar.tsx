@@ -82,16 +82,6 @@ export default function Sidebar() {
           </nav>
         </div>
 
-        <Link
-          href="/verify"
-          aria-label="Start verification"
-          className="mt-14 flex h-14 w-14 items-center justify-center self-center rounded-full border border-gold text-gold transition hover:bg-gold hover:text-ink"
-        >
-          <svg width="14" height="16" viewBox="0 0 14 16" fill="currentColor" aria-hidden="true">
-            <path d="M0 0l14 8-14 8V0z" />
-          </svg>
-        </Link>
-
         <div className="mt-auto space-y-4 text-xs">
           <ul className="space-y-2 text-neutral-500">
             <li>
