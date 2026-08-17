@@ -58,7 +58,7 @@ export default function ClockFace({ hour, minute, size = 240 }: Props) {
           y1={m.y1}
           x2={m.x2}
           y2={m.y2}
-          stroke={m.major ? '#c8a25a' : '#3a3a40'}
+          stroke={m.major ? '#a28f6f' : '#3a3a40'}
           strokeWidth={m.major ? 2.2 : 1}
           strokeLinecap="round"
         />
@@ -71,7 +71,7 @@ export default function ClockFace({ hour, minute, size = 240 }: Props) {
           y={n.y}
           fill="#8b8b93"
           fontSize="11"
-          fontFamily="Georgia, serif"
+          fontFamily="-apple-system, Helvetica Neue, Arial, sans-serif"
           textAnchor="middle"
           dominantBaseline="central"
         >
@@ -97,7 +97,7 @@ export default function ClockFace({ hour, minute, size = 240 }: Props) {
         strokeWidth="4.5"
         strokeLinecap="round"
       />
-      <circle cx="100" cy="100" r="5" fill="#c8a25a" />
+      <circle cx="100" cy="100" r="5" fill="#a28f6f" />
     </svg>
   );
 }

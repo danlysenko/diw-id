@@ -7,20 +7,31 @@
 }
 
 body {
-  @apply bg-ink text-neutral-200 antialiased;
-  background-image: radial-gradient(circle at 50% -20%, rgba(200, 162, 90, 0.12), transparent 55%);
+  @apply bg-ink text-neutral-300 antialiased;
+  background-image: radial-gradient(circle at 50% -20%, rgba(162, 143, 111, 0.1), transparent 55%);
   background-repeat: no-repeat;
   min-height: 100vh;
+  font-weight: 300;
+}
+
+@layer base {
+  h1,
+  h2,
+  h3,
+  .font-display {
+    font-weight: 300;
+    letter-spacing: 0.01em;
+  }
 }
 
 @layer components {
   .panel {
-    @apply rounded-xl border border-line bg-panel/80 backdrop-blur;
+    @apply border border-line bg-panel/80 backdrop-blur;
   }
 
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg px-6 py-3 text-sm font-medium
-           tracking-wide transition disabled:cursor-not-allowed disabled:opacity-40;
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-transparent px-7 py-3
+           text-xs font-normal uppercase tracking-wide3 transition disabled:cursor-not-allowed disabled:opacity-40;
   }
 
   .btn-primary {
@@ -28,11 +39,11 @@ body {
   }
 
   .btn-ghost {
-    @apply btn border border-line text-neutral-300 hover:border-gold hover:text-gold;
+    @apply btn border-line text-neutral-300 hover:border-gold hover:text-gold hover:opacity-90;
   }
 
   .field {
-    @apply w-full rounded-lg border border-line bg-ink px-4 py-3 text-neutral-100
+    @apply w-full border border-line bg-ink px-4 py-3 text-neutral-100
            outline-none transition placeholder:text-neutral-600 focus:border-gold;
   }
 
@@ -42,5 +53,9 @@ body {
 
   .eyebrow {
     @apply text-xs uppercase tracking-widest2 text-gold;
+  }
+
+  .section-title {
+    @apply font-display text-xs uppercase tracking-widest2 text-neutral-500;
   }
 }

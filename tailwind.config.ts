@@ -5,21 +5,22 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        ink: '#0b0b0c',
-        panel: '#141416',
-        line: '#26262a',
-        gold: '#c8a25a',
-        goldSoft: '#e4cf9d',
+        ink: '#000000',
+        panel: '#18191b',
+        line: '#2a2b2e',
+        gold: '#a28f6f',
+        goldSoft: '#cbb896',
         good: '#3fae6a',
         bad: '#d9534f',
         warn: '#d9a63f',
       },
       fontFamily: {
-        display: ['Georgia', 'Cambria', 'Times New Roman', 'serif'],
+        display: ['-apple-system', 'Helvetica Neue', 'Inter', 'Arial', 'sans-serif'],
         sans: ['-apple-system', 'Inter', 'Segoe UI', 'Helvetica', 'Arial', 'sans-serif'],
       },
       letterSpacing: {
         widest2: '0.28em',
+        wide3: '0.12em',
       },
     },
   },
