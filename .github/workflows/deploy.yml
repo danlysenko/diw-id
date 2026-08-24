@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - claude/designa-individual-style-b1g7xu
+  workflow_dispatch: {}
 
 jobs:
   deploy:
