@@ -34,7 +34,7 @@ export default function HomePage() {
         </div>
 
         <div className="flex justify-center">
-          <ClockFace hour={8} minute={43} size={280} />
+          <ClockFace hour={22} minute={10} size={280} />
         </div>
       </section>
 
