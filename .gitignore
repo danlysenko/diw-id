@@ -8,7 +8,6 @@ npm-debug.log*
 
 # local sqlite db + uploaded photos (runtime state, not source)
 data/
-public/uploads/
 
 .env
 .env.local

@@ -47,9 +47,9 @@ in, runs `git pull`, rebuilds, and restarts the app with zero downtime beyond th
 
 ## Notes
 
-- `data/` (the sqlite db) and `public/uploads/` (submitted photos) are gitignored and live outside
-  what `git pull` touches, so they persist across deploys — no volume/storage setup needed, unlike
-  a container platform.
+- `data/` (the sqlite db and submitted photos) is gitignored and lives outside what `git pull`
+  touches, so it persists across deploys — no volume/storage setup needed, unlike a container
+  platform.
 - `npm start` re-seeds the 4 demo watches on every boot (harmless upsert), so the demo DiW IDs
   always work even after a restart.
 - To redeploy by hand instead of waiting on a push: `ssh you@your-vps '~/diw-id/deploy/deploy.sh'`.

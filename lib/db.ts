@@ -72,6 +72,18 @@ db.exec(`
   );
 `);
 
+// Added after the initial release — guarded so it's a no-op once already applied.
+for (const stmt of [
+  'ALTER TABLE legacy_submissions ADD COLUMN reviewed_by TEXT',
+  'ALTER TABLE legacy_submissions ADD COLUMN review_note TEXT',
+]) {
+  try {
+    db.exec(stmt);
+  } catch {
+    // column already exists
+  }
+}
+
 export type Watch = {
   diw_id: string;
   collection: string;
@@ -123,4 +135,6 @@ export type LegacySubmission = {
   photo_paths: string;
   status: string;
   created_at: string;
+  reviewed_by: string | null;
+  review_note: string | null;
 };

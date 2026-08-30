@@ -3,8 +3,20 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import exifr from 'exifr';
 
-export const UPLOAD_DIR = path.join(process.cwd(), 'public', 'uploads');
+// Deliberately outside public/ — files written here while the server is already running must be
+// served by the app/uploads/[filename] route, not Next's public-folder static server, which can
+// cache a 404 for a path it saw before the file existed.
+export const UPLOAD_DIR = path.join(process.cwd(), 'data', 'uploads');
 export const MAX_UPLOAD_BYTES = 12 * 1024 * 1024;
+
+export const UPLOAD_MIME: Record<string, string> = {
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.png': 'image/png',
+  '.heic': 'image/heic',
+  '.heif': 'image/heif',
+  '.webp': 'image/webp',
+};
 
 const ALLOWED_MIME: Record<string, string> = {
   'image/jpeg': '.jpg',

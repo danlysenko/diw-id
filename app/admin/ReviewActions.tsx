@@ -13,19 +13,24 @@ export default function ReviewActions({ sessionId }: { sessionId: string }) {
     setError(null);
     setPending(decision);
 
-    const response = await fetch('/api/admin/review', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ sessionId, decision, note }),
-    });
+    try {
+      const response = await fetch('/api/admin/review', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId, decision, note }),
+      });
 
-    if (!response.ok) {
-      const data = await response.json().catch(() => ({}));
-      setError(data.error ?? 'Could not record the decision.');
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        setError(data.error ?? 'Could not record the decision.');
+        return;
+      }
+      router.refresh();
+    } catch {
+      setError('Could not reach the server. Check your connection and try again.');
+    } finally {
       setPending(null);
-      return;
     }
-    router.refresh();
   }
 
   return (

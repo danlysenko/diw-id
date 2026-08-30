@@ -102,6 +102,7 @@ lib/
 components/      ClockFace, WatchCard, PhotoUploader, CheckList, …
 ```
 
-State lives in SQLite at `data/diw.db` with uploads under `public/uploads/` — both are
-gitignored. For anything beyond local use, move uploads to object storage and the database to a
-managed instance.
+State lives in SQLite at `data/diw.db` with uploads under `data/uploads/` — both are gitignored.
+Uploads are served through `app/uploads/[filename]/route.ts` rather than as static files, since
+they're written after the server starts. For anything beyond local use, move uploads to object
+storage and the database to a managed instance.

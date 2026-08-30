@@ -1,5 +1,5 @@
 import crypto from 'node:crypto';
-import { db, type VerificationSession, type Watch } from './db';
+import { db, type LegacySubmission, type VerificationSession, type Watch } from './db';
 import {
   CHALLENGE_WINDOW_MINUTES,
   LINK_VALID_HOURS,
@@ -67,4 +67,16 @@ export function listManualReviewSessions(): (VerificationSession & { collection:
        ORDER BY s.created_at DESC`,
     )
     .all() as (VerificationSession & { collection: string; base_watch: string })[];
+}
+
+export function listLegacySubmissions(): LegacySubmission[] {
+  return db
+    .prepare(`SELECT * FROM legacy_submissions WHERE status != 'resolved' ORDER BY created_at DESC`)
+    .all() as LegacySubmission[];
+}
+
+export function resolveLegacySubmission(id: string, reviewer: string, note: string | null): void {
+  db.prepare(
+    `UPDATE legacy_submissions SET status = 'resolved', reviewed_by = ?, review_note = ? WHERE id = ?`,
+  ).run(reviewer, note, id);
 }
