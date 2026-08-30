@@ -14,10 +14,14 @@ git reset --hard "origin/$BRANCH"
 
 npm ci
 
-# This Next.js build has shown stale Turbopack cache behavior across deploys (a build once
-# failed type-checking against a previous commit's now-removed export, even though the pulled
-# source was correct) — always build from a clean .next to rule that out entirely.
+# This Next.js build has shown stale-cache behavior across deploys: a build once failed
+# type-checking against a previous commit's now-removed export, at a line number that didn't
+# even exist in the actual pulled file, even after clearing .next. Root cause was TypeScript's
+# own incremental build cache (tsconfig.json's "incremental": true) — a gitignored .tsbuildinfo
+# file at the project root, untouched by both `git reset --hard` and `rm -rf .next` since it
+# lives outside both. Clear everything that could carry stale build state across deploys.
 rm -rf .next
+rm -f ./*.tsbuildinfo
 npm run build
 
 if pm2 describe "$APP_NAME" > /dev/null 2>&1; then
