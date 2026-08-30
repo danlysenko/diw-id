@@ -13,6 +13,11 @@ git checkout "$BRANCH"
 git reset --hard "origin/$BRANCH"
 
 npm ci
+
+# This Next.js build has shown stale Turbopack cache behavior across deploys (a build once
+# failed type-checking against a previous commit's now-removed export, even though the pulled
+# source was correct) — always build from a clean .next to rule that out entirely.
+rm -rf .next
 npm run build
 
 if pm2 describe "$APP_NAME" > /dev/null 2>&1; then
