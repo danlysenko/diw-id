@@ -3,6 +3,8 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import PhotoUploader from '@/components/PhotoUploader';
+import UploadProgressBar from '@/components/UploadProgressBar';
+import { uploadFormData } from '@/lib/uploadWithProgress';
 
 export default function PhotoSubmitForm({ sessionId }: { sessionId: string }) {
   const router = useRouter();
@@ -10,6 +12,7 @@ export default function PhotoSubmitForm({ sessionId }: { sessionId: string }) {
   const [idPhoto, setIdPhoto] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -17,22 +20,30 @@ export default function PhotoSubmitForm({ sessionId }: { sessionId: string }) {
 
     setError(null);
     setSubmitting(true);
+    setProgress(0);
 
     const body = new FormData();
     body.append('sessionId', sessionId);
     body.append('watchPhoto', watchPhoto);
     body.append('idPhoto', idPhoto);
 
-    const response = await fetch('/api/verify/submit', { method: 'POST', body });
-    const data = await response.json();
+    try {
+      const { status, body: responseBody } = await uploadFormData('/api/verify/submit', body, setProgress);
+      const data = JSON.parse(responseBody || '{}');
 
-    if (!response.ok) {
-      setError(data.error ?? 'Upload failed. Try again.');
+      if (status < 200 || status >= 300) {
+        setError(data.error ?? `Upload failed (${status}). Try again.`);
+        return;
+      }
+
+      router.push(`/verify/session/${sessionId}/result`);
+    } catch {
+      setError(
+        'Something went wrong sending the photos. If they are large, try smaller images, then try again.',
+      );
+    } finally {
       setSubmitting(false);
-      return;
     }
-
-    router.push(`/verify/session/${sessionId}/result`);
   }
 
   return (
@@ -77,8 +88,10 @@ export default function PhotoSubmitForm({ sessionId }: { sessionId: string }) {
         className="btn-primary mt-8"
         disabled={submitting || !watchPhoto || !idPhoto}
       >
-        {submitting ? 'Checking against the DiW archive…' : 'Submit for verification'}
+        {submitting ? 'Submitting…' : 'Submit for verification'}
       </button>
+
+      {submitting && <UploadProgressBar fraction={progress} label="Uploading photographs" />}
     </form>
   );
 }

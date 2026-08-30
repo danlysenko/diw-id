@@ -1,30 +1,42 @@
 'use client';
 
 import { useState } from 'react';
+import UploadProgressBar from '@/components/UploadProgressBar';
+import { uploadFormData } from '@/lib/uploadWithProgress';
 
 export default function LegacyForm() {
   const [caseId, setCaseId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [photoCount, setPhotoCount] = useState(0);
+  const [progress, setProgress] = useState(0);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
     setSubmitting(true);
+    setProgress(0);
 
-    const response = await fetch('/api/legacy', {
-      method: 'POST',
-      body: new FormData(event.currentTarget),
-    });
-    const data = await response.json();
+    try {
+      const { status, body } = await uploadFormData(
+        '/api/legacy',
+        new FormData(event.currentTarget),
+        setProgress,
+      );
+      const data = JSON.parse(body || '{}');
 
-    if (!response.ok) {
-      setError(data.error ?? 'Submission failed. Try again.');
+      if (status < 200 || status >= 300) {
+        setError(data.error ?? `Submission failed (${status}). Try again.`);
+        return;
+      }
+      setCaseId(data.caseId);
+    } catch {
+      setError(
+        'Something went wrong sending the submission. If your photos are large, try fewer or smaller images, then try again.',
+      );
+    } finally {
       setSubmitting(false);
-      return;
     }
-    setCaseId(data.caseId);
   }
 
   if (caseId) {
@@ -125,6 +137,8 @@ export default function LegacyForm() {
       <button type="submit" className="btn-primary w-full" disabled={submitting}>
         {submitting ? 'Submitting…' : 'Open Legacy case'}
       </button>
+
+      {submitting && <UploadProgressBar fraction={progress} label="Uploading photographs" />}
     </form>
   );
 }
