@@ -14,19 +14,24 @@ export default function StaffLogin() {
     setError(null);
     setSubmitting(true);
 
-    const response = await fetch('/api/admin/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ key }),
-    });
+    try {
+      const response = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key }),
+      });
 
-    if (!response.ok) {
-      const data = await response.json().catch(() => ({}));
-      setError(data.error ?? 'Sign-in failed.');
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        setError(data.error ?? 'Sign-in failed.');
+        return;
+      }
+      router.refresh();
+    } catch {
+      setError('Could not reach the server. Check your connection and try again.');
+    } finally {
       setSubmitting(false);
-      return;
     }
-    router.refresh();
   }
 
   return (
