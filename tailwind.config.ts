@@ -13,6 +13,7 @@ const config: Config = {
         good: '#3fae6a',
         bad: '#d9534f',
         warn: '#d9a63f',
+        info: '#5b8fd9',
       },
       fontFamily: {
         display: ['-apple-system', 'Helvetica Neue', 'Inter', 'Arial', 'sans-serif'],

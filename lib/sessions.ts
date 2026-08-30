@@ -57,26 +57,36 @@ export function recordPhotoHashes(sessionId: string, hashes: string[]): void {
   tx();
 }
 
-export function listManualReviewSessions(): (VerificationSession & { collection: string; base_watch: string })[] {
+export function listAllVerificationSessions(): (VerificationSession & {
+  collection: string;
+  base_watch: string;
+})[] {
   return db
     .prepare(
       `SELECT s.*, w.collection, w.base_watch
        FROM verification_sessions s
        JOIN watches w ON w.diw_id = s.diw_id
-       WHERE s.status = 'manual_review'
        ORDER BY s.created_at DESC`,
     )
     .all() as (VerificationSession & { collection: string; base_watch: string })[];
 }
 
-export function listLegacySubmissions(): LegacySubmission[] {
-  return db
-    .prepare(`SELECT * FROM legacy_submissions WHERE status != 'resolved' ORDER BY created_at DESC`)
-    .all() as LegacySubmission[];
+export function listAllLegacySubmissions(): LegacySubmission[] {
+  return db.prepare(`SELECT * FROM legacy_submissions ORDER BY created_at DESC`).all() as LegacySubmission[];
 }
 
-export function resolveLegacySubmission(id: string, reviewer: string, note: string | null): void {
-  db.prepare(
-    `UPDATE legacy_submissions SET status = 'resolved', reviewed_by = ?, review_note = ? WHERE id = ?`,
-  ).run(reviewer, note, id);
+export type LegacyStatus = 'under_review' | 'verified' | 'counterfeit';
+
+export function updateLegacyStatus(
+  id: string,
+  status: LegacyStatus,
+  reviewer: string,
+  note: string | null,
+): void {
+  db.prepare(`UPDATE legacy_submissions SET status = ?, reviewed_by = ?, review_note = ? WHERE id = ?`).run(
+    status,
+    reviewer,
+    note,
+    id,
+  );
 }

@@ -67,7 +67,7 @@ db.exec(`
     original_serial TEXT,
     contact_email TEXT,
     photo_paths TEXT NOT NULL, -- JSON array
-    status TEXT NOT NULL DEFAULT 'submitted', -- submitted | under_review | resolved
+    status TEXT NOT NULL DEFAULT 'submitted', -- submitted | under_review | verified | counterfeit
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
   );
 `);
