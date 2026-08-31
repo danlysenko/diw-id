@@ -3,6 +3,7 @@ import { adminEnabled, isStaff } from '@/lib/adminAuth';
 import { listAllLegacySubmissions, listAllVerificationSessions } from '@/lib/sessions';
 import type { LegacySubmission, VerificationSession } from '@/lib/db';
 import ClockFace from '@/components/ClockFace';
+import PhotoLightbox from '@/components/PhotoLightbox';
 import StaffLogin from './StaffLogin';
 import ReviewActions from './ReviewActions';
 import LegacyReviewActions from './LegacyReviewActions';
@@ -179,24 +180,31 @@ export default async function AdminPage() {
                     </div>
                   </div>
 
-                  <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                    {[
-                      { path: row.session.watch_photo_path, label: 'Dial photo', exif: row.session.watch_photo_has_exif },
-                      { path: row.session.id_photo_path, label: 'DiW ID photo', exif: row.session.id_photo_has_exif },
-                    ].map((photo) => (
-                      <figure key={photo.label} className="rounded-lg border border-line p-3">
-                        {photo.path && (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={photo.path} alt={photo.label} className="max-h-72 w-full rounded object-contain" />
-                        )}
-                        <figcaption className="mt-3 flex items-center justify-between text-xs text-neutral-500">
-                          <span>{photo.label}</span>
-                          <span className={photo.exif ? 'text-good' : 'text-warn'}>
-                            {photo.exif ? 'capture metadata present' : 'no capture metadata'}
-                          </span>
-                        </figcaption>
-                      </figure>
-                    ))}
+                  <div className="mt-6">
+                    <PhotoLightbox
+                      photos={[
+                        {
+                          path: row.session.watch_photo_path,
+                          label: 'Dial photo',
+                          exif: row.session.watch_photo_has_exif,
+                        },
+                        {
+                          path: row.session.id_photo_path,
+                          label: 'DiW ID photo',
+                          exif: row.session.id_photo_has_exif,
+                        },
+                      ]
+                        .filter((p): p is { path: string; label: string; exif: number | null } => Boolean(p.path))
+                        .map((p) => ({
+                          path: p.path,
+                          label: p.label,
+                          meta: (
+                            <span className={p.exif ? 'text-good' : 'text-warn'}>
+                              {p.exif ? 'capture metadata present' : 'no capture metadata'}
+                            </span>
+                          ),
+                        }))}
+                    />
                   </div>
 
                   <div className="mt-6">
@@ -235,16 +243,13 @@ export default async function AdminPage() {
                     </p>
                   </div>
 
-                  <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    {(JSON.parse(row.submission.photo_paths) as string[]).map((path, index) => (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        key={path}
-                        src={path}
-                        alt={`${row.submission.model} photo ${index + 1}`}
-                        className="max-h-72 w-full rounded-lg border border-line object-contain p-3"
-                      />
-                    ))}
+                  <div className="mt-6">
+                    <PhotoLightbox
+                      photos={(JSON.parse(row.submission.photo_paths) as string[]).map((path, index) => ({
+                        path,
+                        label: `${row.submission.model} — photo ${index + 1}`,
+                      }))}
+                    />
                   </div>
 
                   <div className="mt-6">
