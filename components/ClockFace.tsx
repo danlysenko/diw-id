@@ -4,9 +4,32 @@ type Props = {
   size?: number;
 };
 
+const CASE_COLOR = '#45454c';
+
+function polar(angleDeg: number, radius: number) {
+  const rad = (angleDeg * Math.PI) / 180;
+  return { x: 100 + Math.cos(rad) * radius, y: 100 + Math.sin(rad) * radius };
+}
+
 function handTip(angleDeg: number, length: number) {
-  const rad = ((angleDeg - 90) * Math.PI) / 180;
-  return { x: 100 + Math.cos(rad) * length, y: 100 + Math.sin(rad) * length };
+  return polar(angleDeg - 90, length);
+}
+
+/** A strap lug: a rounded stub radiating outward from the case at the given angle. */
+function Lug({ angle }: { angle: number }) {
+  const base = polar(angle, 96);
+  const tip = polar(angle, 119);
+  return (
+    <line
+      x1={base.x}
+      y1={base.y}
+      x2={tip.x}
+      y2={tip.y}
+      stroke={CASE_COLOR}
+      strokeWidth={5}
+      strokeLinecap="round"
+    />
+  );
 }
 
 export default function ClockFace({ hour, minute, size = 240 }: Props) {
@@ -40,14 +63,58 @@ export default function ClockFace({ hour, minute, size = 240 }: Props) {
     };
   });
 
+  // Lugs sit just off the 12 and 6 o'clock markers — the arms a strap would attach to.
+  const lugAngles = [-90 - 18, -90 + 18, 90 - 18, 90 + 18];
+
+  // Crown at 3 o'clock, flanked by two chronograph-style pushers.
+  const crownBase = polar(0, 96);
+  const crownTip = polar(0, 112);
+  const pusherTopBase = polar(-20, 96);
+  const pusherTopTip = polar(-20, 106);
+  const pusherBottomBase = polar(20, 96);
+  const pusherBottomTip = polar(20, 106);
+
   return (
     <svg
       width={size}
       height={size}
-      viewBox="0 0 200 200"
+      viewBox="-25 -25 250 250"
       role="img"
       aria-label={`Dial showing ${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`}
     >
+      {lugAngles.map((angle) => (
+        <Lug key={angle} angle={angle} />
+      ))}
+
+      <line
+        x1={pusherTopBase.x}
+        y1={pusherTopBase.y}
+        x2={pusherTopTip.x}
+        y2={pusherTopTip.y}
+        stroke={CASE_COLOR}
+        strokeWidth={4}
+        strokeLinecap="round"
+      />
+      <line
+        x1={pusherBottomBase.x}
+        y1={pusherBottomBase.y}
+        x2={pusherBottomTip.x}
+        y2={pusherBottomTip.y}
+        stroke={CASE_COLOR}
+        strokeWidth={4}
+        strokeLinecap="round"
+      />
+      <line
+        x1={crownBase.x}
+        y1={crownBase.y}
+        x2={crownTip.x}
+        y2={crownTip.y}
+        stroke={CASE_COLOR}
+        strokeWidth={7}
+        strokeLinecap="round"
+      />
+
+      <circle cx="100" cy="100" r="101" fill="none" stroke={CASE_COLOR} strokeWidth="1.5" />
       <circle cx="100" cy="100" r="97" fill="#0f0f11" stroke="#26262a" strokeWidth="2" />
       <circle cx="100" cy="100" r="88" fill="none" stroke="#1b1b1f" strokeWidth="1" />
 
