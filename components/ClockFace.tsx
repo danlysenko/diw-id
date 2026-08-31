@@ -12,11 +12,6 @@ const METAL = '#4a4a52';
 const METAL_DARK = '#232328';
 const METAL_EDGE = '#1c1c20';
 
-function polar(cx: number, cy: number, angleDeg: number, radius: number) {
-  const rad = (angleDeg * Math.PI) / 180;
-  return { x: cx + Math.cos(rad) * radius, y: cy + Math.sin(rad) * radius };
-}
-
 /** A dauphine-style hand: pointed at the tip, a small pointed counter-tail behind the pivot. */
 function handPath(angleDeg: number, length: number, tail: number, width: number) {
   const rad = ((angleDeg - 90) * Math.PI) / 180;
@@ -65,24 +60,23 @@ export default function ClockFace({ hour, minute, size = 240 }: Props) {
     };
   });
 
-  // Modern screw-down-style crown at 3 o'clock: short stem, a chunky fluted knob.
-  const crownStemBase = polar(100, 100, 0, 103);
-  const crownStemTip = polar(100, 100, 0, 111);
-  const knob = polar(100, 100, 0, 120);
-  const knobR = 9.5;
-  const fluteCount = 16;
-  const flutes = Array.from({ length: fluteCount }, (_, i) => {
-    const angle = (360 / fluteCount) * i;
-    const inner = polar(knob.x, knob.y, angle, knobR - 3);
-    const outer = polar(knob.x, knob.y, angle, knobR);
-    return { key: i, inner, outer };
-  });
+  // Modern screw-down-style crown at 3 o'clock, drawn in side profile the way it
+  // actually reads in a frontal watch photo: a short neck, then a knurled drum
+  // sticking out sideways, seen from the side rather than face-on.
+  const crownNeckX = 100 + 103;
+  const crownDrumX = 100 + 111;
+  const crownDrumWidth = 20;
+  const crownDrumHeight = 17;
+  const fluteCount = 6;
+  const fluteXs = Array.from({ length: fluteCount }, (_, i) =>
+    crownDrumX + 3 + i * ((crownDrumWidth - 6) / (fluteCount - 1))
+  );
 
   return (
     <svg
       width={size}
       height={size}
-      viewBox="-7 -20 240 240"
+      viewBox="-9 -20 242 242"
       role="img"
       aria-label={`Dial showing ${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`}
     >
@@ -92,33 +86,35 @@ export default function ClockFace({ hour, minute, size = 240 }: Props) {
           <stop offset="45%" stopColor="#45454c" />
           <stop offset="100%" stopColor="#1c1c20" />
         </radialGradient>
-        <radialGradient id={crownGradientId} cx="35%" cy="30%" r="75%">
-          <stop offset="0%" stopColor="#6e6e78" />
-          <stop offset="100%" stopColor="#26262b" />
-        </radialGradient>
+        <linearGradient id={crownGradientId} x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#7d7d87" />
+          <stop offset="50%" stopColor="#48484f" />
+          <stop offset="100%" stopColor="#1f1f23" />
+        </linearGradient>
       </defs>
 
-      <line
-        x1={crownStemBase.x}
-        y1={crownStemBase.y}
-        x2={crownStemTip.x}
-        y2={crownStemTip.y}
-        stroke={METAL}
-        strokeWidth={6}
+      <rect x={crownNeckX} y={100 - 3} width={crownDrumX - crownNeckX} height={6} fill={METAL} />
+      <rect
+        x={crownDrumX}
+        y={100 - crownDrumHeight / 2}
+        width={crownDrumWidth}
+        height={crownDrumHeight}
+        rx={crownDrumHeight / 2}
+        fill={`url(#${crownGradientId})`}
+        stroke={METAL_EDGE}
+        strokeWidth={1}
       />
-      <circle cx={knob.x} cy={knob.y} r={knobR} fill={`url(#${crownGradientId})`} stroke={METAL_EDGE} strokeWidth={1} />
-      {flutes.map((f) => (
+      {fluteXs.map((x, i) => (
         <line
-          key={f.key}
-          x1={f.inner.x}
-          y1={f.inner.y}
-          x2={f.outer.x}
-          y2={f.outer.y}
+          key={i}
+          x1={x}
+          y1={100 - crownDrumHeight / 2 + 3}
+          x2={x}
+          y2={100 + crownDrumHeight / 2 - 3}
           stroke={METAL_DARK}
-          strokeWidth={0.9}
+          strokeWidth={1}
         />
       ))}
-      <circle cx={knob.x} cy={knob.y} r={2.5} fill="#3a3a40" />
 
       <circle cx="100" cy="100" r="103" fill={`url(#${bezelGradientId})`} stroke={METAL_EDGE} strokeWidth="1" />
       <circle cx="100" cy="100" r="97" fill="#0f0f11" stroke="#26262a" strokeWidth="2" />
