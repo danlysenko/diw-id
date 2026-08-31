@@ -10,27 +10,11 @@ type Props = {
 
 const METAL = '#4a4a52';
 const METAL_DARK = '#232328';
-const METAL_EDGE = '#232328';
+const METAL_EDGE = '#1c1c20';
 
-function polar(angleDeg: number, radius: number) {
+function polar(cx: number, cy: number, angleDeg: number, radius: number) {
   const rad = (angleDeg * Math.PI) / 180;
-  return { x: 100 + Math.cos(rad) * radius, y: 100 + Math.sin(rad) * radius };
-}
-
-/** A tapered, chamfered lug radiating outward from the case at the given angle. */
-function lugPath(angle: number) {
-  const baseL = polar(angle - 10, 95);
-  const baseR = polar(angle + 10, 95);
-  const shoulderL = polar(angle - 9, 108);
-  const shoulderR = polar(angle + 9, 108);
-  const tipL = polar(angle - 4, 121);
-  const tipR = polar(angle + 4, 121);
-  return `M ${baseL.x} ${baseL.y}
-    L ${shoulderL.x} ${shoulderL.y}
-    L ${tipL.x} ${tipL.y}
-    L ${tipR.x} ${tipR.y}
-    L ${shoulderR.x} ${shoulderR.y}
-    L ${baseR.x} ${baseR.y} Z`;
+  return { x: cx + Math.cos(rad) * radius, y: cy + Math.sin(rad) * radius };
 }
 
 /** A dauphine-style hand: pointed at the tip, a small pointed counter-tail behind the pivot. */
@@ -51,7 +35,6 @@ function handPath(angleDeg: number, length: number, tail: number, width: number)
 export default function ClockFace({ hour, minute, size = 240 }: Props) {
   const uid = useId();
   const bezelGradientId = `bezel-${uid}`;
-  const lugGradientId = `lug-${uid}`;
   const crownGradientId = `crown-${uid}`;
 
   const hourAngle = (hour % 12) * 30 + minute * 0.5;
@@ -82,19 +65,24 @@ export default function ClockFace({ hour, minute, size = 240 }: Props) {
     };
   });
 
-  const lugAngles = [-90 - 20, -90 + 20, 90 - 20, 90 + 20];
-
-  // Crown at 3 o'clock: a stem, a knob, and a few fluting grooves for grip.
-  const crownStemBase = polar(0, 96);
-  const crownStemTip = polar(0, 106);
-  const knob = polar(0, 116);
-  const knobR = 9;
+  // Modern screw-down-style crown at 3 o'clock: short stem, a chunky fluted knob.
+  const crownStemBase = polar(100, 100, 0, 103);
+  const crownStemTip = polar(100, 100, 0, 111);
+  const knob = polar(100, 100, 0, 120);
+  const knobR = 9.5;
+  const fluteCount = 16;
+  const flutes = Array.from({ length: fluteCount }, (_, i) => {
+    const angle = (360 / fluteCount) * i;
+    const inner = polar(knob.x, knob.y, angle, knobR - 3);
+    const outer = polar(knob.x, knob.y, angle, knobR);
+    return { key: i, inner, outer };
+  });
 
   return (
     <svg
       width={size}
       height={size}
-      viewBox="-25 -25 250 250"
+      viewBox="-7 -20 240 240"
       role="img"
       aria-label={`Dial showing ${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`}
     >
@@ -104,30 +92,11 @@ export default function ClockFace({ hour, minute, size = 240 }: Props) {
           <stop offset="45%" stopColor="#45454c" />
           <stop offset="100%" stopColor="#1c1c20" />
         </radialGradient>
-        <linearGradient id={lugGradientId} x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#5c5c66" />
-          <stop offset="100%" stopColor="#2c2c31" />
-        </linearGradient>
         <radialGradient id={crownGradientId} cx="35%" cy="30%" r="75%">
           <stop offset="0%" stopColor="#6e6e78" />
-          <stop offset="100%" stopColor="#28282d" />
+          <stop offset="100%" stopColor="#26262b" />
         </radialGradient>
       </defs>
-
-      {lugAngles.map((angle) => (
-        <path
-          key={angle}
-          d={lugPath(angle)}
-          fill={`url(#${lugGradientId})`}
-          stroke={METAL_EDGE}
-          strokeWidth={1}
-          strokeLinejoin="round"
-        />
-      ))}
-      {lugAngles.map((angle) => {
-        const hole = polar(angle, 114);
-        return <circle key={`hole-${angle}`} cx={hole.x} cy={hole.y} r={2.2} fill={METAL_DARK} />;
-      })}
 
       <line
         x1={crownStemBase.x}
@@ -135,20 +104,21 @@ export default function ClockFace({ hour, minute, size = 240 }: Props) {
         x2={crownStemTip.x}
         y2={crownStemTip.y}
         stroke={METAL}
-        strokeWidth={7}
+        strokeWidth={6}
       />
       <circle cx={knob.x} cy={knob.y} r={knobR} fill={`url(#${crownGradientId})`} stroke={METAL_EDGE} strokeWidth={1} />
-      {[-6, -2.5, 1, 4.5, 8].map((dy) => (
+      {flutes.map((f) => (
         <line
-          key={dy}
-          x1={knob.x - 5}
-          y1={knob.y + dy}
-          x2={knob.x + 5}
-          y2={knob.y + dy}
+          key={f.key}
+          x1={f.inner.x}
+          y1={f.inner.y}
+          x2={f.outer.x}
+          y2={f.outer.y}
           stroke={METAL_DARK}
-          strokeWidth={0.8}
+          strokeWidth={0.9}
         />
       ))}
+      <circle cx={knob.x} cy={knob.y} r={2.5} fill="#3a3a40" />
 
       <circle cx="100" cy="100" r="103" fill={`url(#${bezelGradientId})`} stroke={METAL_EDGE} strokeWidth="1" />
       <circle cx="100" cy="100" r="97" fill="#0f0f11" stroke="#26262a" strokeWidth="2" />
