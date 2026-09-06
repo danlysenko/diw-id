@@ -3,12 +3,12 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 body {
-  @apply bg-ink text-neutral-300 antialiased;
-  background-image: radial-gradient(circle at 50% -20%, rgba(162, 143, 111, 0.1), transparent 55%);
+  @apply bg-paper text-ink antialiased;
+  background-image: radial-gradient(circle at 50% -20%, rgba(162, 143, 111, 0.14), transparent 55%);
   background-repeat: no-repeat;
   min-height: 100vh;
   font-weight: 300;
@@ -26,7 +26,7 @@ body {
 
 @layer components {
   .panel {
-    @apply border border-line bg-panel/80 backdrop-blur;
+    @apply border border-black/10 bg-white;
   }
 
   .btn {
@@ -39,12 +39,12 @@ body {
   }
 
   .btn-ghost {
-    @apply btn border-line text-neutral-300 hover:border-gold hover:text-gold hover:opacity-90;
+    @apply btn border-black/15 text-ink hover:border-gold hover:text-gold hover:opacity-90;
   }
 
   .field {
-    @apply w-full border border-line bg-ink px-4 py-3 text-neutral-100
-           outline-none transition placeholder:text-neutral-600 focus:border-gold;
+    @apply w-full border border-black/15 bg-white px-4 py-3 text-ink
+           outline-none transition placeholder:text-neutral-400 focus:border-gold;
   }
 
   .label {

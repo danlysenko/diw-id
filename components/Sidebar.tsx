@@ -81,11 +81,6 @@ export default function Sidebar() {
         <div className="mt-auto space-y-4 text-xs">
           <ul className="space-y-2 text-neutral-500">
             <li>
-              <Link href="/dealer" className="transition hover:text-gold">
-                For dealers
-              </Link>
-            </li>
-            <li>
               <Link href="/verify" className="transition hover:text-gold">
                 Start a verification
               </Link>

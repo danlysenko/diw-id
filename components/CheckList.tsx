@@ -16,7 +16,7 @@ export default function CheckList({ checks }: { checks: CheckResult[] }) {
             <span className={`mt-0.5 w-4 shrink-0 text-center ${mark.className}`}>{mark.glyph}</span>
             <div>
               <p className="text-sm text-neutral-200">{check.label}</p>
-              <p className="mt-1 text-xs leading-relaxed text-neutral-500">{check.detail}</p>
+              <p className="mt-1 text-xs leading-relaxed text-neutral-600">{check.detail}</p>
             </div>
           </li>
         );

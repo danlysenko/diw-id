@@ -14,12 +14,12 @@ export default function StepRail({ current }: { current: 1 | 2 | 3 | 4 }) {
                   ? 'text-gold'
                   : state === 'done'
                     ? 'text-neutral-400'
-                    : 'text-neutral-700'
+                    : 'text-neutral-400'
               }
             >
               {step}. {label}
             </span>
-            {step < STEPS.length && <span className="text-neutral-800">—</span>}
+            {step < STEPS.length && <span className="text-neutral-200">—</span>}
           </li>
         );
       })}

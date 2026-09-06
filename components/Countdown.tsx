@@ -24,7 +24,7 @@ export default function Countdown({ expiresAt }: { expiresAt: string }) {
   }
 
   return (
-    <span className={urgent ? 'text-sm tabular-nums text-warn' : 'text-sm tabular-nums text-neutral-400'}>
+    <span className={urgent ? 'text-sm tabular-nums text-warn' : 'text-sm tabular-nums text-neutral-600'}>
       {minutes}:{String(seconds).padStart(2, '0')} remaining
     </span>
   );

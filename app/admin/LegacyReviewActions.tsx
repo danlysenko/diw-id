@@ -43,12 +43,12 @@ export default function LegacyReviewActions({ caseId, status, reviewedBy, review
 
   if (status === 'verified' || status === 'counterfeit' || status === 'resolved') {
     return (
-      <div className="text-sm text-neutral-400">
+      <div className="text-sm text-neutral-600">
         <p>
           Marked <span className="text-neutral-200">{status === 'counterfeit' ? 'counterfeit' : 'verified'}</span>
           {reviewedBy && <> by {reviewedBy}</>}.
         </p>
-        {reviewNote && <p className="mt-1 text-neutral-500">{reviewNote}</p>}
+        {reviewNote && <p className="mt-1 text-neutral-600">{reviewNote}</p>}
       </div>
     );
   }

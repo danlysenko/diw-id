@@ -84,7 +84,7 @@ export default async function AdminPage() {
       <div className="panel p-8">
         <p className="eyebrow">Staff review</p>
         <h1 className="mt-3 font-display text-2xl text-neutral-50">Review queue is not configured</h1>
-        <p className="mt-4 max-w-2xl text-sm leading-relaxed text-neutral-400">
+        <p className="mt-4 max-w-2xl text-sm leading-relaxed text-neutral-600">
           Set <code className="text-neutral-200">DIW_ADMIN_KEY</code> in the environment to open the
           manual review queue. Without it the queue stays closed rather than unguarded.
         </p>
@@ -133,7 +133,7 @@ export default async function AdminPage() {
       </p>
 
       <div className="mt-10 space-y-4">
-        {rows.length === 0 && <p className="text-neutral-400">No cases yet.</p>}
+        {rows.length === 0 && <p className="text-neutral-600">No cases yet.</p>}
 
         {rows.map((row) => (
           <details
@@ -146,14 +146,14 @@ export default async function AdminPage() {
                 <span className={`text-xs uppercase tracking-widest2 ${TEXT_CLASS[row.meta.color]}`}>
                   {row.meta.label}
                 </span>
-                <span className="text-xs uppercase tracking-widest2 text-neutral-700">
+                <span className="text-xs uppercase tracking-widest2 text-neutral-400">
                   {row.kind === 'verification' ? 'Live' : 'Legacy'}
                 </span>
                 <span className="truncate text-neutral-100">
                   {row.kind === 'verification' ? row.session.diw_id : row.submission.model}
                 </span>
               </div>
-              <span className="shrink-0 text-xs text-neutral-600">{formatDate(row.createdAt)}</span>
+              <span className="shrink-0 text-xs text-neutral-500">{formatDate(row.createdAt)}</span>
             </summary>
 
             <div className="border-t border-line p-6">
@@ -162,17 +162,17 @@ export default async function AdminPage() {
                   <div className="flex flex-wrap items-start justify-between gap-6">
                     <div>
                       <h2 className="font-display text-xl text-neutral-50">{row.session.diw_id}</h2>
-                      <p className="mt-1 text-sm text-neutral-400">
+                      <p className="mt-1 text-sm text-neutral-600">
                         {row.session.collection} — {row.session.base_watch}
                       </p>
-                      <p className="mt-3 text-xs uppercase tracking-widest2 text-neutral-600">
+                      <p className="mt-3 text-xs uppercase tracking-widest2 text-neutral-500">
                         {row.session.flow} flow · submitted {formatDate(row.session.created_at)}
                       </p>
                     </div>
                     <div className="flex items-center gap-4">
                       <ClockFace hour={row.session.challenge_hour} minute={row.session.challenge_minute} size={78} />
                       <div>
-                        <p className="text-xs uppercase tracking-widest2 text-neutral-600">Requested</p>
+                        <p className="text-xs uppercase tracking-widest2 text-neutral-500">Requested</p>
                         <p className="font-display text-lg text-neutral-100">
                           {formatChallenge(row.session.challenge_hour, row.session.challenge_minute)}
                         </p>
@@ -211,7 +211,7 @@ export default async function AdminPage() {
                     {row.session.status === 'manual_review' ? (
                       <ReviewActions sessionId={row.session.id} />
                     ) : (
-                      <p className="text-sm text-neutral-400">
+                      <p className="text-sm text-neutral-600">
                         {row.session.status === 'passed' || row.session.status === 'failed'
                           ? `Resolved automatically as ${row.session.status}${
                               row.session.reviewed_by ? ` by ${row.session.reviewed_by}` : ''
@@ -226,19 +226,19 @@ export default async function AdminPage() {
                   <div className="flex flex-wrap items-start justify-between gap-6">
                     <div>
                       <h2 className="font-display text-xl text-neutral-50">{row.submission.model}</h2>
-                      <p className="mt-1 text-sm text-neutral-400">
+                      <p className="mt-1 text-sm text-neutral-600">
                         Approx. {row.submission.approx_year} · bought at {row.submission.purchase_location}
                       </p>
                       {row.submission.original_serial && (
-                        <p className="mt-1 text-sm text-neutral-500">
+                        <p className="mt-1 text-sm text-neutral-600">
                           Base watch serial: {row.submission.original_serial}
                         </p>
                       )}
                       {row.submission.contact_email && (
-                        <p className="mt-1 text-sm text-neutral-500">{row.submission.contact_email}</p>
+                        <p className="mt-1 text-sm text-neutral-600">{row.submission.contact_email}</p>
                       )}
                     </div>
-                    <p className="text-xs uppercase tracking-widest2 text-neutral-600">
+                    <p className="text-xs uppercase tracking-widest2 text-neutral-500">
                       submitted {formatDate(row.submission.created_at)}
                     </p>
                   </div>

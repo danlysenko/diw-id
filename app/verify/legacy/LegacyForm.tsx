@@ -46,11 +46,11 @@ export default function LegacyForm() {
         <h2 className="mt-3 font-display text-2xl text-neutral-50">
           Your Legacy case is with DiW Authentication
         </h2>
-        <p className="mt-4 text-sm leading-relaxed text-neutral-400">
+        <p className="mt-4 text-sm leading-relaxed text-neutral-600">
           A member of the team will match your watch against the DiW build archive. Legacy cases are
           reviewed by a person, so they take longer than an instant DiW ID verification.
         </p>
-        <p className="mt-5 text-xs text-neutral-600">Case reference: {caseId}</p>
+        <p className="mt-5 text-xs text-neutral-500">Case reference: {caseId}</p>
       </div>
     );
   }

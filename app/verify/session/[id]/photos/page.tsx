@@ -18,7 +18,7 @@ export default async function PhotosPage({ params }: { params: Promise<{ id: str
     return (
       <div>
         <StepRail current={4} />
-        <p className="text-neutral-400">This verification has already been submitted.</p>
+        <p className="text-neutral-600">This verification has already been submitted.</p>
         <Link href={`/verify/session/${session.id}/result`} className="btn-primary mt-6">
           View result
         </Link>

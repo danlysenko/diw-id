@@ -63,7 +63,7 @@ export default async function ResultPage({ params }: { params: Promise<{ id: str
         )}
 
         <details className="panel mt-8 p-8">
-          <summary className="cursor-pointer text-sm text-neutral-300">What was checked</summary>
+          <summary className="cursor-pointer text-sm text-neutral-700">What was checked</summary>
           <div className="mt-4">
             <CheckList checks={checks} />
           </div>

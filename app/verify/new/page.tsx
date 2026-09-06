@@ -15,7 +15,7 @@ export default async function EnterDiwIdPage({
 
       <p className="eyebrow">{flow === 'dealer' ? 'Dealer verification' : 'Live verification'}</p>
       <h1 className="mt-4 font-display text-3xl text-neutral-50">Enter the DiW ID</h1>
-      <p className="mt-4 max-w-2xl text-neutral-400">
+      <p className="mt-4 max-w-2xl text-neutral-600">
         The number is engraved on the rehaut at 6 o’clock. It looks like{' '}
         <span className="text-neutral-200">26-00483</span>.
       </p>
@@ -24,7 +24,7 @@ export default async function EnterDiwIdPage({
         <DiwIdForm flow={flow} />
       </div>
 
-      <p className="mt-8 max-w-2xl text-xs leading-relaxed text-neutral-600">
+      <p className="mt-8 max-w-2xl text-xs leading-relaxed text-neutral-500">
         DiW does not display any details of the watch at this stage. A valid number alone proves
         nothing — the instance record opens only after live verification passes.
       </p>

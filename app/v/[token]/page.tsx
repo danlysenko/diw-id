@@ -26,7 +26,7 @@ export default async function VerificationLinkPage({
   if (isExpired(session.link_expires_at)) {
     return (
       <div className="panel p-8">
-        <p className="eyebrow text-neutral-500">Link expired</p>
+        <p className="eyebrow text-neutral-600">Link expired</p>
         <h1 className="mt-3 font-display text-3xl text-neutral-50">This verification has expired</h1>
         <p className="mt-4 max-w-2xl text-sm leading-relaxed text-neutral-400">
           DiW verification links are valid for 24 hours so they cannot be recycled from an earlier
@@ -55,7 +55,7 @@ export default async function VerificationLinkPage({
           random and photographed the result inside a 20-minute window. You are reading this
           confirmation on diw.com, not from the seller.
         </p>
-        <p className="mt-4 text-xs uppercase tracking-widest2 text-neutral-600">
+        <p className="mt-4 text-xs uppercase tracking-widest2 text-neutral-500">
           Link valid until {new Date(session.link_expires_at).toLocaleString('en-GB')}
         </p>
       </div>
@@ -64,7 +64,7 @@ export default async function VerificationLinkPage({
         <WatchCard watch={watch} verifiedAt={session.verified_at} possessionVerified />
       </div>
 
-      <p className="mt-8 max-w-2xl text-xs leading-relaxed text-neutral-600">
+      <p className="mt-8 max-w-2xl text-xs leading-relaxed text-neutral-500">
         A live verification confirms authenticity and physical possession at the time it was run.
         It does not confirm legal ownership, and DiW never discloses who holds the watch.
       </p>

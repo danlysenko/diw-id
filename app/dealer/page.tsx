@@ -19,7 +19,7 @@ export default function DealerPage() {
       <h1 className="mt-4 font-display text-3xl text-neutral-50">
         Give buyers proof they don’t have to take on trust
       </h1>
-      <p className="mt-4 max-w-2xl text-neutral-400">
+      <p className="mt-4 max-w-2xl text-neutral-600">
         A buyer has no way to judge photographs you send them — they could be of any watch, taken at
         any time. A DiW verification link is issued by DiW and read on this site, so the buyer sees
         the confirmation at the source.
@@ -28,7 +28,7 @@ export default function DealerPage() {
       <div className="mt-10 grid gap-8 md:grid-cols-[1.1fr_1fr]">
         <ol className="panel space-y-4 p-8">
           {DEALER_STEPS.map((step, index) => (
-            <li key={step} className="flex gap-4 text-sm text-neutral-300">
+            <li key={step} className="flex gap-4 text-sm text-neutral-700">
               <span className="w-5 shrink-0 font-display text-gold">{index + 1}</span>
               <span>{step}</span>
             </li>

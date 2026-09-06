@@ -7,7 +7,7 @@ export default function ChooseWatchTypePage() {
       <h1 className="mt-4 font-display text-3xl text-neutral-50">
         When was your DiW produced?
       </h1>
-      <p className="mt-4 max-w-2xl text-neutral-400">
+      <p className="mt-4 max-w-2xl text-neutral-600">
         Watches produced from 2026 onwards carry a unique DiW ID and can be verified instantly.
         Earlier pieces are handled through the DiW archive by our authentication team.
       </p>

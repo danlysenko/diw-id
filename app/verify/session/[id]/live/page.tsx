@@ -20,7 +20,7 @@ export default async function LiveChallengePage({ params }: { params: Promise<{ 
     return (
       <div>
         <StepRail current={4} />
-        <p className="text-neutral-400">This verification has already been submitted.</p>
+        <p className="text-neutral-600">This verification has already been submitted.</p>
         <Link href={`/verify/session/${session.id}/result`} className="btn-primary mt-6">
           View result
         </Link>
@@ -50,7 +50,7 @@ export default async function LiveChallengePage({ params }: { params: Promise<{ 
             ) : (
               <Countdown expiresAt={session.expires_at} />
             )}
-            <span className="text-xs uppercase tracking-widest2 text-neutral-700">
+            <span className="text-xs uppercase tracking-widest2 text-neutral-400">
               One-time challenge
             </span>
           </div>

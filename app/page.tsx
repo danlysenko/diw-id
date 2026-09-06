@@ -16,7 +16,7 @@ export default function HomePage() {
         <h1 className="mt-4 max-w-2xl font-display text-4xl leading-tight text-neutral-50 md:text-5xl">
           Prove the watch is real — and that it is in your hands right now.
         </h1>
-        <p className="mt-6 max-w-xl text-neutral-400">
+        <p className="mt-6 max-w-xl text-neutral-600">
           A photograph proves nothing on its own; anyone can forward one. DiW Live Verification
           asks for a hand position that only exists after we ask for it, so a passing result
           means someone held that specific watch within the last twenty minutes.
@@ -38,7 +38,7 @@ export default function HomePage() {
             <li key={step.n} className="panel p-6">
               <span className="font-display text-sm text-gold">{step.n}</span>
               <h3 className="mt-3 text-neutral-100">{step.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-neutral-500">{step.body}</p>
+              <p className="mt-2 text-sm leading-relaxed text-neutral-600">{step.body}</p>
             </li>
           ))}
         </ol>
@@ -46,7 +46,7 @@ export default function HomePage() {
 
       <section className="panel p-8">
         <h2 className="font-display text-xl text-neutral-100">Buying on the secondary market?</h2>
-        <p className="mt-3 max-w-2xl text-sm leading-relaxed text-neutral-400">
+        <p className="mt-3 max-w-2xl text-sm leading-relaxed text-neutral-600">
           Ask the seller for a DiW verification link instead of photographs. The link is generated
           by DiW, not by the seller, and it expires after 24 hours — so it cannot be recycled from
           an older sale. You read the result on this site, so there is nothing to take on trust.

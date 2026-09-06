@@ -2,7 +2,7 @@ export default function UploadProgressBar({ fraction, label }: { fraction: numbe
   const pct = Math.round(Math.min(1, Math.max(0, fraction)) * 100);
   return (
     <div className="mt-4" role="status" aria-live="polite">
-      <div className="flex items-center justify-between text-xs uppercase tracking-widest2 text-neutral-500">
+      <div className="flex items-center justify-between text-xs uppercase tracking-widest2 text-neutral-600">
         <span>{label}</span>
         <span className="tabular-nums text-gold">{pct}%</span>
       </div>

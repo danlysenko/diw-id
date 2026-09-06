@@ -26,9 +26,9 @@ export default function PhotoUploader({ name, title, hint, requirements, onSelec
   return (
     <div className="panel p-6">
       <p className="eyebrow">{title}</p>
-      <p className="mt-2 text-sm text-neutral-300">{hint}</p>
+      <p className="mt-2 text-sm text-neutral-700">{hint}</p>
 
-      <ul className="mt-4 space-y-1 text-xs text-neutral-500">
+      <ul className="mt-4 space-y-1 text-xs text-neutral-600">
         {requirements.map((r) => (
           <li key={r}>— {r}</li>
         ))}
@@ -49,7 +49,7 @@ export default function PhotoUploader({ name, title, hint, requirements, onSelec
         <button type="button" className="btn-ghost" onClick={() => inputRef.current?.click()}>
           {fileName ? 'Replace photo' : 'Choose photo'}
         </button>
-        {fileName && <span className="truncate text-xs text-neutral-500">{fileName}</span>}
+        {fileName && <span className="truncate text-xs text-neutral-600">{fileName}</span>}
       </div>
 
       {preview && (
