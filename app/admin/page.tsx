@@ -122,9 +122,9 @@ export default async function AdminPage() {
   for (const row of rows) counts[row.meta.color] += 1;
 
   return (
-    <div>
-      <p className="eyebrow">DiW Authentication</p>
-      <h1 className="mt-4 font-display text-3xl text-neutral-50">All cases</h1>
+    <div className="-mt-8">
+      <p className="eyebrow text-center">DiW Authentication</p>
+      <h1 className="mt-8 font-display text-3xl text-neutral-50">All cases</h1>
       <p className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm">
         <span className={TEXT_CLASS.info}>{counts.info} new</span>
         <span className={TEXT_CLASS.warn}>{counts.warn} pending review</span>

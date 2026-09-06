@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import Sidebar from '@/components/Sidebar';
+import PageShell from '@/components/PageShell';
 
 export const metadata: Metadata = {
   title: 'Check My DiW — Watch Authentication',
@@ -12,9 +13,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body className="font-sans">
         <Sidebar />
-        <main className="md:ml-[190px]">
-          <div className="mx-auto max-w-5xl px-6 pb-16 pt-24 md:pt-16">{children}</div>
-        </main>
+        <PageShell>{children}</PageShell>
       </body>
     </html>
   );

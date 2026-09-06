@@ -14,9 +14,9 @@ const DEALER_STEPS = [
 
 export default function DealerPage() {
   return (
-    <div>
-      <p className="eyebrow">For dealers</p>
-      <h1 className="mt-4 font-display text-3xl text-neutral-50">
+    <div className="-mt-8">
+      <p className="eyebrow text-center">For dealers</p>
+      <h1 className="mt-8 font-display text-3xl text-neutral-50">
         Give buyers proof they don’t have to take on trust
       </h1>
       <p className="mt-4 max-w-2xl text-neutral-600">

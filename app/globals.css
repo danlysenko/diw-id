@@ -2,14 +2,58 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Circe: DiW's parent brand (Designa Individual) typeface. Self-hosted from
+   /public/fonts/circe — same three weights the brand site itself ships. */
+@font-face {
+  font-family: 'Circe';
+  src:
+    url('/fonts/circe/Circe-Light.woff2') format('woff2'),
+    url('/fonts/circe/Circe-Light.woff') format('woff');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Circe';
+  src:
+    url('/fonts/circe/Circe-Regular.woff2') format('woff2'),
+    url('/fonts/circe/Circe-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Circe';
+  src:
+    url('/fonts/circe/Circe-Bold.woff2') format('woff2'),
+    url('/fonts/circe/Circe-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   color-scheme: light;
+  /* Headings (neutral-50/100/200) read dark-on-light by default; the .theme-dark
+     scope (admin) flips them to near-white so the same classes read on black. */
+  --nt-50: 24 24 27;
+  --nt-100: 31 31 34;
+  --nt-200: 40 40 44;
+}
+
+.theme-dark {
+  color-scheme: dark;
+  --nt-50: 250 250 250;
+  --nt-100: 245 245 245;
+  --nt-200: 229 229 229;
 }
 
 body {
-  @apply bg-paper text-ink antialiased;
-  background-image: radial-gradient(circle at 50% -20%, rgba(162, 143, 111, 0.14), transparent 55%);
+  @apply text-ink antialiased;
+  background-color: #ffffff;
+  background-image: linear-gradient(to bottom, #d9d9d9, #ffffff);
   background-repeat: no-repeat;
+  background-attachment: fixed;
   min-height: 100vh;
   font-weight: 300;
 }
@@ -29,9 +73,13 @@ body {
     @apply border border-black/10 bg-white;
   }
 
+  .theme-dark .panel {
+    @apply border-line bg-panel;
+  }
+
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-full border border-transparent px-7 py-3
-           text-xs font-normal uppercase tracking-wide3 transition disabled:cursor-not-allowed disabled:opacity-40;
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-transparent px-6 pb-2.5 pt-3
+           text-xs font-normal uppercase leading-none tracking-wide3 transition disabled:cursor-not-allowed disabled:opacity-40;
   }
 
   .btn-primary {
@@ -42,9 +90,17 @@ body {
     @apply btn border-black/15 text-ink hover:border-gold hover:text-gold hover:opacity-90;
   }
 
+  .theme-dark .btn-ghost {
+    @apply border-line text-neutral-300 hover:opacity-90;
+  }
+
   .field {
     @apply w-full border border-black/15 bg-white px-4 py-3 text-ink
            outline-none transition placeholder:text-neutral-400 focus:border-gold;
+  }
+
+  .theme-dark .field {
+    @apply border-line bg-panel text-neutral-100 placeholder:text-neutral-600;
   }
 
   .label {
@@ -52,7 +108,7 @@ body {
   }
 
   .eyebrow {
-    @apply text-xs uppercase tracking-widest2 text-gold;
+    @apply text-xs uppercase tracking-widest2 text-[#926f3b];
   }
 
   .section-title {

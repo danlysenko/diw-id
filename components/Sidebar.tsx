@@ -16,7 +16,7 @@ export default function Sidebar() {
 
   return (
     <>
-      <header className="fixed inset-x-0 top-0 z-40 flex items-center justify-between border-b border-line bg-ink px-5 py-3 md:hidden">
+      <header className="fixed inset-x-0 top-0 z-40 flex items-center justify-between border-b border-line bg-[#1c1c1e] px-5 py-3 md:hidden">
         <Link href="/" className="flex h-10 w-10 items-center justify-center transition hover:opacity-80">
           <img src="/logo.png" width={40} height={40} alt="DiW" />
         </Link>
@@ -34,7 +34,7 @@ export default function Sidebar() {
       </header>
 
       {open && (
-        <nav className="fixed inset-x-0 top-[57px] bottom-0 z-30 bg-ink px-6 py-10 md:hidden">
+        <nav className="fixed inset-x-0 top-[57px] bottom-0 z-30 bg-[#1c1c1e] px-6 py-10 md:hidden">
           <ul className="space-y-6 text-sm uppercase tracking-wide3">
             {NAV.map((item) => (
               <li key={item.href}>
@@ -51,17 +51,17 @@ export default function Sidebar() {
         </nav>
       )}
 
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-[190px] flex-col border-r border-line bg-ink px-6 py-10 md:flex">
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-[160px] flex-col border-r border-line bg-[#1c1c1e] px-6 py-10 md:flex">
         <Link
           href="/"
-          className="flex h-16 w-16 items-center justify-center self-center transition hover:opacity-80"
+          className="mt-[20px] flex h-20 w-20 items-center justify-center self-center transition hover:opacity-80"
         >
-          <img src="/logo.png" width={64} height={64} alt="DiW" />
+          <img src="/logo.png" width={80} height={80} alt="DiW" />
         </Link>
 
         <div className="mt-14">
           <nav>
-            <ul className="space-y-4 text-xs uppercase tracking-wide3">
+            <ul className="space-y-2 text-xs uppercase tracking-wide3">
               {NAV.map((item) => (
                 <li key={item.href}>
                   <Link
@@ -78,18 +78,11 @@ export default function Sidebar() {
           </nav>
         </div>
 
-        <div className="mt-auto space-y-4 text-xs">
-          <ul className="space-y-2 text-neutral-500">
-            <li>
-              <Link href="/verify" className="transition hover:text-gold">
-                Start a verification
-              </Link>
-            </li>
-          </ul>
-          <p className="leading-relaxed text-neutral-600">
+        <div className="mt-auto space-y-4 font-['Arial'] text-[12px] font-normal text-[#777777]">
+          <p className="leading-relaxed">
             Live verification proves possession at a moment in time, not ownership.
           </p>
-          <p className="text-neutral-700">{new Date().getFullYear()} © DiW Authentication</p>
+          <p>{new Date().getFullYear()} © DiW Authentication</p>
         </div>
       </aside>
     </>

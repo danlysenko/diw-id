@@ -5,21 +5,20 @@ const STEPS = [
   { n: '02', title: 'Receive a live challenge', body: 'DiW names a random hand position, valid for 20 minutes.' },
   { n: '03', title: 'Set the hands', body: 'Physically move the watch to the requested time.' },
   { n: '04', title: 'Send two photos', body: 'The dial at the requested time, and the DiW ID.' },
-  { n: '05', title: 'Get a proof link', body: 'A verified result any buyer can open on diw.com for 24 hours.' },
+  { n: '05', title: 'Get a proof link', body: 'A verified result any buyer can open on designa-individual.com for 24 hours.' },
 ];
 
 export default function HomePage() {
   return (
-    <div className="space-y-20">
-      <section>
-        <p className="eyebrow">Check My DiW</p>
-        <h1 className="mt-4 max-w-2xl font-display text-4xl leading-tight text-neutral-50 md:text-5xl">
-          Prove the watch is real — and that it is in your hands right now.
+    <div>
+      <section className="-mt-8">
+        <p className="eyebrow text-center">Check My DiW</p>
+        <h1 className="mt-8 max-w-2xl font-display text-2xl leading-tight text-neutral-50 md:text-3xl">
+          Prove the watch is authentic.
         </h1>
         <p className="mt-6 max-w-xl text-neutral-600">
-          A photograph proves nothing on its own; anyone can forward one. DiW Live Verification
-          asks for a hand position that only exists after we ask for it, so a passing result
-          means someone held that specific watch within the last twenty minutes.
+          A photograph proves nothing — anyone can forward one. Live Verification asks for a hand
+          position invented in the moment, proof the watch is in your hands right now.
         </p>
         <div className="mt-9 flex flex-wrap gap-4">
           <Link href="/verify" className="btn-primary">
@@ -31,25 +30,24 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section>
+      <section className="mt-10">
         <h2 className="font-display text-2xl text-neutral-100">How it works</h2>
-        <ol className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <ol className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
           {STEPS.map((step) => (
-            <li key={step.n} className="panel p-6">
-              <span className="font-display text-sm text-gold">{step.n}</span>
-              <h3 className="mt-3 text-neutral-100">{step.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-neutral-600">{step.body}</p>
+            <li key={step.n} className="panel p-4">
+              <span className="font-display text-xs text-gold">{step.n}</span>
+              <h3 className="mt-2 text-sm text-neutral-100">{step.title}</h3>
+              <p className="mt-1 text-xs leading-relaxed text-neutral-600">{step.body}</p>
             </li>
           ))}
         </ol>
       </section>
 
-      <section className="panel p-8">
+      <section className="panel mt-20 p-8">
         <h2 className="font-display text-xl text-neutral-100">Buying on the secondary market?</h2>
         <p className="mt-3 max-w-2xl text-sm leading-relaxed text-neutral-600">
-          Ask the seller for a DiW verification link instead of photographs. The link is generated
-          by DiW, not by the seller, and it expires after 24 hours — so it cannot be recycled from
-          an older sale. You read the result on this site, so there is nothing to take on trust.
+          Ask for a DiW verification link, not photographs. Issued by DiW and valid 24 hours, it
+          can’t be recycled from an old sale — read the result here, not on trust.
         </p>
       </section>
     </div>
