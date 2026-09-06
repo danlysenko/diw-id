@@ -51,7 +51,7 @@ export default function Sidebar() {
         </nav>
       )}
 
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-[240px] flex-col border-r border-line bg-ink px-8 py-10 md:flex">
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-[190px] flex-col border-r border-line bg-ink px-6 py-10 md:flex">
         <Link
           href="/"
           className="flex h-16 w-16 items-center justify-center self-center transition hover:opacity-80"
@@ -60,8 +60,7 @@ export default function Sidebar() {
         </Link>
 
         <div className="mt-14">
-          <p className="text-xs uppercase tracking-widest2 text-gold">Menu</p>
-          <nav className="mt-5">
+          <nav>
             <ul className="space-y-4 text-xs uppercase tracking-wide3">
               {NAV.map((item) => (
                 <li key={item.href}>
