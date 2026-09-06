@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
+import Logo from './Logo';
 
 const NAV = [
   { href: '/', label: 'Check My DiW' },
@@ -17,11 +18,8 @@ export default function Sidebar() {
   return (
     <>
       <header className="fixed inset-x-0 top-0 z-40 flex items-center justify-between border-b border-line bg-ink px-5 py-3 md:hidden">
-        <Link
-          href="/"
-          className="flex h-10 w-10 items-center justify-center rounded-full border border-line text-[10px] tracking-wide3 text-neutral-100"
-        >
-          DiW
+        <Link href="/" className="flex h-10 w-10 items-center justify-center text-neutral-300 transition hover:text-gold">
+          <Logo size={40} />
         </Link>
         <button
           type="button"
@@ -57,9 +55,9 @@ export default function Sidebar() {
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-[240px] flex-col border-r border-line bg-ink px-8 py-10 md:flex">
         <Link
           href="/"
-          className="flex h-16 w-16 items-center justify-center self-center rounded-full border border-line text-sm tracking-wide3 text-neutral-100 transition hover:border-gold hover:text-gold"
+          className="flex h-16 w-16 items-center justify-center self-center text-neutral-300 transition hover:text-gold"
         >
-          DiW
+          <Logo size={64} />
         </Link>
 
         <div className="mt-14">
