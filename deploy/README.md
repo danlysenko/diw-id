@@ -53,3 +53,25 @@ in, runs `git pull`, rebuilds, and restarts the app with zero downtime beyond th
 - `npm start` re-seeds the 4 demo watches on every boot (harmless upsert), so the demo DiW IDs
   always work even after a restart.
 - To redeploy by hand instead of waiting on a push: `ssh you@your-vps '~/diw-id/deploy/deploy.sh'`.
+
+## Portability: moving off the VPS later
+
+The plan is to eventually move this app to a cPanel/Passenger-based host with a
+Node.js Selector (e.g. FlokiNET's shared hosting, which lists Node.js + SSH),
+dropping the VPS entirely. Passenger can't run `next start` directly — it
+requires a plain Node file that listens on `process.env.PORT` — so `server.js`
+at the repo root wraps the same Next.js app for that: `npm run start:passenger`
+runs it locally the same way Passenger would. The VPS deploy is untouched by
+this; pm2 still runs `npm start` as before.
+
+When actually porting:
+1. In cPanel → Setup Node.js App: point "Application startup file" at `server.js`.
+2. `better-sqlite3` needs its prebuilt binary to resolve during `npm install` —
+   verify this works on the target host before relying on it (SSH in and run
+   `npm install` by hand first). If it doesn't, swap to a pure-JS/WASM SQLite
+   driver.
+3. `data/` (db + uploads) needs to live somewhere with a persistent path outside
+   the app's `git`-managed directory, same as it does on the VPS now.
+4. Replace `deploy.sh`'s `pm2 restart`/`pm2 start` step with whatever the host's
+   Node app manager uses to restart (cPanel exposes a "Restart" action/API for
+   Passenger apps; there's no pm2 or nginx to configure on a Passenger host).

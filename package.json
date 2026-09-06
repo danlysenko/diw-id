@@ -10,6 +10,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "tsx scripts/seed.ts && next start",
+    "start:passenger": "node server.js",
     "lint": "next lint",
     "seed": "tsx scripts/seed.ts"
   },
