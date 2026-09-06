@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import ClockFace from '@/components/ClockFace';
 
 const STEPS = [
   { n: '01', title: 'Enter your DiW ID', body: 'The number engraved at 6 o’clock on the rehaut.' },
@@ -12,29 +11,23 @@ const STEPS = [
 export default function HomePage() {
   return (
     <div className="space-y-20">
-      <section className="grid items-center gap-12 md:grid-cols-[1.3fr_1fr]">
-        <div>
-          <p className="eyebrow">Check My DiW</p>
-          <h1 className="mt-4 font-display text-4xl leading-tight text-neutral-50 md:text-5xl">
-            Prove the watch is real — and that it is in your hands right now.
-          </h1>
-          <p className="mt-6 max-w-xl text-neutral-400">
-            A photograph proves nothing on its own; anyone can forward one. DiW Live Verification
-            asks for a hand position that only exists after we ask for it, so a passing result
-            means someone held that specific watch within the last twenty minutes.
-          </p>
-          <div className="mt-9 flex flex-wrap gap-4">
-            <Link href="/verify" className="btn-primary">
-              Verify my watch
-            </Link>
-            <Link href="/dealer" className="btn-ghost">
-              I’m a dealer
-            </Link>
-          </div>
-        </div>
-
-        <div className="flex justify-center">
-          <ClockFace hour={22} minute={10} size={280} />
+      <section>
+        <p className="eyebrow">Check My DiW</p>
+        <h1 className="mt-4 max-w-2xl font-display text-4xl leading-tight text-neutral-50 md:text-5xl">
+          Prove the watch is real — and that it is in your hands right now.
+        </h1>
+        <p className="mt-6 max-w-xl text-neutral-400">
+          A photograph proves nothing on its own; anyone can forward one. DiW Live Verification
+          asks for a hand position that only exists after we ask for it, so a passing result
+          means someone held that specific watch within the last twenty minutes.
+        </p>
+        <div className="mt-9 flex flex-wrap gap-4">
+          <Link href="/verify" className="btn-primary">
+            Verify my watch
+          </Link>
+          <Link href="/dealer" className="btn-ghost">
+            I’m a dealer
+          </Link>
         </div>
       </section>
 
