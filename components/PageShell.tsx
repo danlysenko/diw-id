@@ -14,7 +14,11 @@ export default function PageShell({ children }: { children: React.ReactNode }) {
 
   return (
     <main className={`min-h-screen md:ml-[160px] ${dark ? 'theme-dark bg-ink text-neutral-500' : ''}`}>
-      <div className="mx-auto max-w-5xl px-6 pb-16 pt-24 md:pt-16">{children}</div>
+      {/* Fluid up to 1440px so wide screens get real columns instead of one narrow strip;
+          top padding clears the fixed mobile header (65px) on small screens. */}
+      <div className="mx-auto max-w-[1440px] px-5 pb-16 pt-[5.5rem] sm:px-8 md:pt-8 lg:px-12 2xl:px-16">
+        {children}
+      </div>
     </main>
   );
 }

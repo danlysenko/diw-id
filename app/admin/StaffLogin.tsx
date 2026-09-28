@@ -35,11 +35,11 @@ export default function StaffLogin() {
   }
 
   return (
-    <div className="-mt-8 mx-auto max-w-sm">
+    <div className="mx-auto max-w-sm">
       <p className="eyebrow text-center">DiW Authentication</p>
       <h1 className="mt-8 font-display text-2xl text-neutral-50">Staff sign-in</h1>
 
-      <form onSubmit={handleSubmit} className="panel mt-8 p-8">
+      <form onSubmit={handleSubmit} className="panel panel-pad mt-8">
         <label className="label text-[#777777]" htmlFor="key">
           Staff key
         </label>

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import { logStatusChange, verificationStatus } from '@/lib/caseStatus';
 import { runChecks } from '@/lib/checks';
 import { isUploadError, storePhoto } from '@/lib/uploads';
 import { findWatch, getSession, issueVerificationLink, recordPhotoHashes } from '@/lib/sessions';
@@ -77,6 +78,16 @@ export async function POST(request: Request) {
   recordPhotoHashes(sessionId, [watchPhoto.sha256, idPhoto.sha256]);
 
   if (outcome.status === 'passed') issueVerificationLink(sessionId);
+
+  // First entry in the case's history: what the automatic checks decided on submission.
+  logStatusChange({
+    kind: 'verification',
+    caseId: sessionId,
+    from: null,
+    to: verificationStatus(outcome.status),
+    by: 'Automatic checks',
+    note: outcome.failReason,
+  });
 
   return NextResponse.json({ status: outcome.status });
 }

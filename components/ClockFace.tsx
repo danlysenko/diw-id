@@ -1,135 +1,79 @@
 'use client';
 
-import { useId } from 'react';
+import { useEffect, useState } from 'react';
 
 type Props = {
   hour: number;
   minute: number;
   size?: number;
+  /** Lets a page size the dial responsively with CSS; `size` stays the fallback. */
+  className?: string;
+  /** The animated seconds hand; off where the dial is just a static record (admin). */
+  showSeconds?: boolean;
 };
 
-const METAL = '#4a4a52';
-const METAL_DARK = '#232328';
-const METAL_EDGE = '#1c1c20';
+const INK = '#1a1a1a';
 
-/** A dauphine-style hand: pointed at the tip, a small pointed counter-tail behind the pivot. */
-function handPath(angleDeg: number, length: number, tail: number, width: number) {
+/**
+ * Point on the dial at `angleDeg` (0 = 12 o'clock, clockwise) and `radius` from the centre.
+ * Rounded because Node and browsers disagree on the last digits of Math.cos/sin, which would
+ * otherwise make the server-rendered SVG fail hydration.
+ */
+function polar(angleDeg: number, radius: number) {
   const rad = ((angleDeg - 90) * Math.PI) / 180;
-  const dx = Math.cos(rad);
-  const dy = Math.sin(rad);
-  const px = -dy;
-  const py = dx;
-  const half = width / 2;
-  const baseL = { x: 100 + px * half, y: 100 + py * half };
-  const baseR = { x: 100 - px * half, y: 100 - py * half };
-  const front = { x: 100 + dx * length, y: 100 + dy * length };
-  const back = { x: 100 - dx * tail, y: 100 - dy * tail };
-  return `M ${back.x} ${back.y} L ${baseL.x} ${baseL.y} L ${front.x} ${front.y} L ${baseR.x} ${baseR.y} Z`;
+  const round = (n: number) => Math.round(n * 100) / 100;
+  return { x: round(100 + Math.cos(rad) * radius), y: round(100 + Math.sin(rad) * radius) };
 }
 
-export default function ClockFace({ hour, minute, size = 240 }: Props) {
-  const uid = useId();
-  const bezelGradientId = `bezel-${uid}`;
-  const crownGradientId = `crown-${uid}`;
-
+export default function ClockFace({ hour, minute, size = 240, className, showSeconds = true }: Props) {
   const hourAngle = (hour % 12) * 30 + minute * 0.5;
   const minuteAngle = minute * 6;
 
-  const markers = Array.from({ length: 60 }, (_, i) => {
-    const angle = ((i * 6 - 90) * Math.PI) / 180;
+  // The seconds hand is decorative (only hour and minute are checked). It starts at 0 on the
+  // server render, then picks up the real seconds on mount via a negative animation delay.
+  const [secondsOffset, setSecondsOffset] = useState(0);
+  useEffect(() => {
+    const now = new Date();
+    setSecondsOffset(now.getSeconds() + now.getMilliseconds() / 1000);
+  }, []);
+
+  const ticks = Array.from({ length: 60 }, (_, i) => {
     const major = i % 5 === 0;
-    const outer = 92;
-    const inner = major ? 80 : 87;
-    return {
-      key: i,
-      x1: 100 + Math.cos(angle) * inner,
-      y1: 100 + Math.sin(angle) * inner,
-      x2: 100 + Math.cos(angle) * outer,
-      y2: 100 + Math.sin(angle) * outer,
-      major,
-    };
+    const outer = polar(i * 6, 93);
+    const inner = polar(i * 6, major ? 84 : 88.5);
+    return { key: i, major, outer, inner };
   });
 
   const numerals = Array.from({ length: 12 }, (_, i) => {
     const value = i + 1;
-    const angle = ((value * 30 - 90) * Math.PI) / 180;
-    return {
-      value,
-      x: 100 + Math.cos(angle) * 66,
-      y: 100 + Math.sin(angle) * 66,
-    };
+    return { value, ...polar(value * 30, 71) };
   });
 
-  // Modern screw-down-style crown at 3 o'clock, drawn in side profile the way it
-  // actually reads in a frontal watch photo: a short neck, then a knurled drum
-  // sticking out sideways, seen from the side rather than face-on.
-  const crownNeckX = 100 + 103;
-  const crownDrumX = 100 + 111;
-  const crownDrumWidth = 20;
-  const crownDrumHeight = 17;
-  const fluteCount = 6;
-  const fluteXs = Array.from({ length: fluteCount }, (_, i) =>
-    crownDrumX + 3 + i * ((crownDrumWidth - 6) / (fluteCount - 1))
-  );
+  const hourTip = polar(hourAngle, 44);
+  const hourTail = polar(hourAngle + 180, 10);
+  const minuteTip = polar(minuteAngle, 68);
+  const minuteTail = polar(minuteAngle + 180, 12);
 
   return (
     <svg
       width={size}
       height={size}
-      viewBox="-9 -20 242 242"
+      className={className}
+      viewBox="0 0 200 200"
       role="img"
       aria-label={`Dial showing ${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`}
     >
-      <defs>
-        <radialGradient id={bezelGradientId} cx="35%" cy="28%" r="80%">
-          <stop offset="0%" stopColor="#75757e" />
-          <stop offset="45%" stopColor="#45454c" />
-          <stop offset="100%" stopColor="#1c1c20" />
-        </radialGradient>
-        <linearGradient id={crownGradientId} x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#7d7d87" />
-          <stop offset="50%" stopColor="#48484f" />
-          <stop offset="100%" stopColor="#1f1f23" />
-        </linearGradient>
-      </defs>
+      <circle cx="100" cy="100" r="98" fill="#ffffff" stroke="#dcdcdc" strokeWidth="1.5" />
 
-      <rect x={crownNeckX} y={100 - 3} width={crownDrumX - crownNeckX} height={6} fill={METAL} />
-      <rect
-        x={crownDrumX}
-        y={100 - crownDrumHeight / 2}
-        width={crownDrumWidth}
-        height={crownDrumHeight}
-        rx={crownDrumHeight / 2}
-        fill={`url(#${crownGradientId})`}
-        stroke={METAL_EDGE}
-        strokeWidth={1}
-      />
-      {fluteXs.map((x, i) => (
+      {ticks.map((t) => (
         <line
-          key={i}
-          x1={x}
-          y1={100 - crownDrumHeight / 2 + 3}
-          x2={x}
-          y2={100 + crownDrumHeight / 2 - 3}
-          stroke={METAL_DARK}
-          strokeWidth={1}
-        />
-      ))}
-
-      <circle cx="100" cy="100" r="103" fill={`url(#${bezelGradientId})`} stroke={METAL_EDGE} strokeWidth="1" />
-      <circle cx="100" cy="100" r="97" fill="#0f0f11" stroke="#26262a" strokeWidth="2" />
-      <circle cx="100" cy="100" r="88" fill="none" stroke="#1b1b1f" strokeWidth="1" />
-
-      {markers.map((m) => (
-        <line
-          key={m.key}
-          x1={m.x1}
-          y1={m.y1}
-          x2={m.x2}
-          y2={m.y2}
-          stroke={m.major ? '#a28f6f' : '#3a3a40'}
-          strokeWidth={m.major ? 2.2 : 1}
-          strokeLinecap="round"
+          key={t.key}
+          x1={t.inner.x}
+          y1={t.inner.y}
+          x2={t.outer.x}
+          y2={t.outer.y}
+          stroke={INK}
+          strokeWidth={t.major ? 3 : 1.2}
         />
       ))}
 
@@ -138,9 +82,10 @@ export default function ClockFace({ hour, minute, size = 240 }: Props) {
           key={n.value}
           x={n.x}
           y={n.y}
-          fill="#8b8b93"
-          fontSize="11"
-          fontFamily="-apple-system, Helvetica Neue, Arial, sans-serif"
+          fill={INK}
+          fontSize="19"
+          fontWeight="700"
+          fontFamily="Arial, Helvetica, sans-serif"
           textAnchor="middle"
           dominantBaseline="central"
         >
@@ -148,11 +93,33 @@ export default function ClockFace({ hour, minute, size = 240 }: Props) {
         </text>
       ))}
 
-      <path d={handPath(hourAngle, 46, 10, 7.5)} fill="#f2f2f4" stroke="#1b1b1f" strokeWidth="0.75" strokeLinejoin="round" />
-      <path d={handPath(minuteAngle, 72, 14, 5.5)} fill="#f2f2f4" stroke="#1b1b1f" strokeWidth="0.75" strokeLinejoin="round" />
+      <line
+        x1={hourTail.x}
+        y1={hourTail.y}
+        x2={hourTip.x}
+        y2={hourTip.y}
+        stroke={INK}
+        strokeWidth="6"
+        strokeLinecap="round"
+      />
+      <line
+        x1={minuteTail.x}
+        y1={minuteTail.y}
+        x2={minuteTip.x}
+        y2={minuteTip.y}
+        stroke={INK}
+        strokeWidth="4"
+        strokeLinecap="round"
+      />
 
-      <circle cx="100" cy="100" r="6.5" fill="#1b1b1f" />
-      <circle cx="100" cy="100" r="3.5" fill="#a28f6f" />
+      {showSeconds && (
+        <g className="clock-seconds" style={{ animationDelay: `-${secondsOffset}s` }}>
+          <line x1="100" y1="118" x2="100" y2="16" stroke={INK} strokeWidth="1.2" strokeLinecap="round" />
+        </g>
+      )}
+
+      <circle cx="100" cy="100" r="5.5" fill={INK} />
+      <circle cx="100" cy="100" r="2.2" fill="#ffffff" />
     </svg>
   );
 }

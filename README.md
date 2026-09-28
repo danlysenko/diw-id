@@ -2,7 +2,7 @@
 
 Live verification for DiW watches. A photograph on its own proves nothing: anyone can forward
 one. This flow asks for a hand position that did not exist until DiW asked for it, so a passing
-result means someone physically held that specific watch inside a 20-minute window.
+result means someone physically held that specific watch inside a 10-minute-10-second window.
 
 ## Running it
 
@@ -21,6 +21,7 @@ Open http://localhost:3000.
 | --- | --- |
 | `DIW_ADMIN_KEY` | Staff key for the review queue at `/admin`. Until it is set, the queue is closed rather than unguarded. |
 | `DIW_ANALYZER` | `manual` (default) sends every submission to a human reviewer. `demo` auto-passes the image checks so the full flow can be walked without a vision provider. |
+| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM` | SMTP credentials for the "Send email" button on a Legacy case. Staff write and send each email by hand — nothing goes out automatically. The button stays disabled until all of `SMTP_HOST`, `SMTP_USER` and `SMTP_PASS` are set. |
 
 ### Seeded watches
 
@@ -39,14 +40,14 @@ Any other ID returns *DiW ID not found. Please contact DiW Authentication.*
 2. **`/verify/new`** — they enter the DiW ID engraved on the rehaut at 6 o'clock, e.g. `26-00483`.
    A valid number releases **no watch details at this stage**, so a guessed or copied number gains
    nothing.
-3. **`/verify/session/[id]/live`** — DiW generates a random hand position, shows it as a dial
-   diagram, and starts a 20-minute countdown. The challenge is single-use.
-4. The owner physically sets the hands to that time.
-5. **`/verify/session/[id]/photos`** — two uploads: the dial front-on at the requested time, and
-   the DiW ID engraving.
-6. **`/verify/session/[id]/result`** — `AUTHENTIC DiW` plus the instance record, a manual-review
+3. **`/verify/session/[id]/live`** — one page for the challenge and the photos. DiW generates a
+   random hand position, shows it as a dial diagram, and starts a 10 min 10 s countdown (the
+   challenge is single-use). The owner physically sets the hands to that time and, on the same
+   page, uploads two photos: the dial front-on at the requested time, and the DiW ID engraving.
+   (`/verify/session/[id]/photos` redirects here for older links.)
+4. **`/verify/session/[id]/result`** — `AUTHENTIC DiW` plus the instance record, a manual-review
    holding page, or a failure that releases no watch details.
-7. A passing result issues a **verification link** valid for 24 hours.
+5. A passing result issues a **verification link** valid for 24 hours.
 
 Dealers use the same pipeline via `/dealer` → `/verify/new?flow=dealer`, and send the resulting
 link to a buyer. The buyer reads the confirmation on the DiW site rather than trusting photographs
@@ -61,7 +62,7 @@ approximate year, place of purchase, optional base-watch serial, and photographs
 uploaded bytes:
 
 - **DiW ID exists** in the archive.
-- **Verification window still open** — submissions after the 20 minutes fail outright.
+- **Verification window still open** — submissions after the 10 min 10 s window fail outright.
 - **Photos not previously submitted** — every upload's SHA-256 is retained, so a recycled image
   from an earlier verification is rejected.
 

@@ -16,14 +16,18 @@ const config: Config = {
         warn: '#d9a63f',
         info: '#5b8fd9',
         // The app is light by default (main content) with the sidebar and /admin staying
-        // dark (see .theme-dark in globals.css). 300-900 keep Tailwind's defaults — they
-        // read fine as grays against either black or the light body. Only 50/100/200 (used
-        // for headings, which need to flip between near-black-on-light and near-white-on-dark)
-        // are driven by CSS variables that .theme-dark overrides.
+        // dark (see .theme-dark in globals.css). 50/100/200 (headings) and 400-700 (secondary
+        // text) are driven by CSS variables so .theme-dark can flip headings to near-white and
+        // lift the mid-greys, which are too dim on black. 300 and 800/900 keep Tailwind's
+        // defaults; the sidebar sits outside .theme-dark and is unaffected.
         neutral: {
           50: 'rgb(var(--nt-50) / <alpha-value>)',
           100: 'rgb(var(--nt-100) / <alpha-value>)',
           200: 'rgb(var(--nt-200) / <alpha-value>)',
+          400: 'rgb(var(--nt-400) / <alpha-value>)',
+          500: 'rgb(var(--nt-500) / <alpha-value>)',
+          600: 'rgb(var(--nt-600) / <alpha-value>)',
+          700: 'rgb(var(--nt-700) / <alpha-value>)',
         },
       },
       fontFamily: {

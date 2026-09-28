@@ -1,5 +1,5 @@
 import { db, type VerificationSession, type Watch } from './db';
-import { isExpired } from './challenge';
+import { CHALLENGE_WINDOW_TEXT, isExpired } from './challenge';
 import { analyzePhotos, type ImageVerdict } from './analysis';
 import type { StoredPhoto } from './uploads';
 
@@ -63,7 +63,7 @@ export async function runChecks(args: {
     label: LABELS.window_open,
     verdict: expired ? 'fail' : 'pass',
     detail: expired
-      ? 'The 20-minute live verification window closed before the photos were submitted.'
+      ? `The ${CHALLENGE_WINDOW_TEXT} live verification window closed before the photos were submitted.`
       : 'Photos were submitted inside the live verification window.',
   });
 

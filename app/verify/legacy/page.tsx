@@ -1,19 +1,31 @@
+import PageHeader from '@/components/PageHeader';
+import { createLegacyChallenge } from '@/lib/sessions';
 import LegacyForm from './LegacyForm';
 
+// Each visit issues a fresh, single-use hand position, so this page can never be cached.
+export const dynamic = 'force-dynamic';
+
 export default function LegacyPage() {
+  const challenge = createLegacyChallenge();
+
   return (
     <div>
-      <p className="eyebrow">DiW Legacy — before 2026</p>
-      <h1 className="mt-4 font-display text-3xl text-neutral-50">Open an archive case</h1>
-      <p className="mt-4 max-w-2xl text-neutral-600">
-        Watches built before 2026 do not carry a DiW ID, so there is nothing to look up
-        automatically. Tell us what you have and DiW Authentication will match it against the build
-        archive by hand.
-      </p>
+      <PageHeader eyebrow="DiW Legacy — before 2026" title="Open an archive case">
+        <p>
+          Watches built before 2026 do not carry a DiW ID, so there is nothing to look up
+          automatically. Tell us what you have and DiW Authentication will match it against the
+          build archive by hand.
+        </p>
+      </PageHeader>
 
-      <div className="mt-10 max-w-2xl">
-        <LegacyForm />
-      </div>
+      <LegacyForm
+        challenge={{
+          id: challenge.id,
+          hour: challenge.challenge_hour,
+          minute: challenge.challenge_minute,
+          expiresAt: challenge.expires_at,
+        }}
+      />
     </div>
   );
 }

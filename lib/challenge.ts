@@ -1,4 +1,6 @@
-export const CHALLENGE_WINDOW_MINUTES = 20;
+export const CHALLENGE_WINDOW_SECONDS = 10 * 60 + 10;
+/** Human wording for the window, used in copy so it can't drift from the actual timer. */
+export const CHALLENGE_WINDOW_TEXT = '10 minutes 10 seconds';
 export const LINK_VALID_HOURS = 24;
 
 /**

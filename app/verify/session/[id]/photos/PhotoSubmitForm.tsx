@@ -48,7 +48,7 @@ export default function PhotoSubmitForm({ sessionId }: { sessionId: string }) {
 
   return (
     <form onSubmit={handleSubmit}>
-      <div className="grid gap-5 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
         <PhotoUploader
           name="watchPhoto"
           title="Photo 1 — the watch, front on"
@@ -85,7 +85,7 @@ export default function PhotoSubmitForm({ sessionId }: { sessionId: string }) {
 
       <button
         type="submit"
-        className="btn-primary mt-8"
+        className="btn-primary mt-8 w-full sm:w-auto"
         disabled={submitting || !watchPhoto || !idPhoto}
       >
         {submitting ? 'Submitting…' : 'Submit for verification'}

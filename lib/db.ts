@@ -70,12 +70,52 @@ db.exec(`
     status TEXT NOT NULL DEFAULT 'submitted', -- submitted | under_review | verified | counterfeit
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
   );
+
+  -- Every status change on a case, automatic or by staff, in order. Never updated or deleted.
+  CREATE TABLE IF NOT EXISTS case_status_log (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    case_kind TEXT NOT NULL, -- verification | legacy
+    case_id TEXT NOT NULL,
+    from_status TEXT, -- null for the first entry (case submitted)
+    to_status TEXT NOT NULL, -- new | pending | verified | counterfeit
+    changed_by TEXT NOT NULL,
+    note TEXT,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+  CREATE INDEX IF NOT EXISTS case_status_log_case ON case_status_log (case_kind, case_id, id);
+
+  -- Every email staff send to a Legacy case's contact address, whether it succeeded or not.
+  CREATE TABLE IF NOT EXISTS legacy_emails (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    case_id TEXT NOT NULL,
+    sent_by TEXT NOT NULL,
+    to_address TEXT NOT NULL,
+    subject TEXT NOT NULL,
+    body TEXT NOT NULL,
+    ok INTEGER NOT NULL,
+    error TEXT,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+  CREATE INDEX IF NOT EXISTS legacy_emails_case ON legacy_emails (case_id, id);
+
+  -- Hand position issued when the Legacy form is opened; single-use, consumed on submit.
+  CREATE TABLE IF NOT EXISTS legacy_challenges (
+    id TEXT PRIMARY KEY,
+    challenge_hour INTEGER NOT NULL,
+    challenge_minute INTEGER NOT NULL,
+    expires_at TEXT NOT NULL,
+    used_at TEXT,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
 `);
 
 // Added after the initial release — guarded so it's a no-op once already applied.
 for (const stmt of [
   'ALTER TABLE legacy_submissions ADD COLUMN reviewed_by TEXT',
   'ALTER TABLE legacy_submissions ADD COLUMN review_note TEXT',
+  'ALTER TABLE legacy_submissions ADD COLUMN challenge_hour INTEGER',
+  'ALTER TABLE legacy_submissions ADD COLUMN challenge_minute INTEGER',
+  'ALTER TABLE legacy_submissions ADD COLUMN dial_photo_path TEXT',
 ]) {
   try {
     db.exec(stmt);
@@ -137,4 +177,40 @@ export type LegacySubmission = {
   created_at: string;
   reviewed_by: string | null;
   review_note: string | null;
+  // Null on cases opened before Legacy cases carried a hand-position challenge.
+  challenge_hour: number | null;
+  challenge_minute: number | null;
+  dial_photo_path: string | null;
+};
+
+export type CaseStatusLogEntry = {
+  id: number;
+  case_kind: 'verification' | 'legacy';
+  case_id: string;
+  from_status: string | null;
+  to_status: string;
+  changed_by: string;
+  note: string | null;
+  created_at: string;
+};
+
+export type LegacyEmail = {
+  id: number;
+  case_id: string;
+  sent_by: string;
+  to_address: string;
+  subject: string;
+  body: string;
+  ok: number;
+  error: string | null;
+  created_at: string;
+};
+
+export type LegacyChallenge = {
+  id: string;
+  challenge_hour: number;
+  challenge_minute: number;
+  expires_at: string;
+  used_at: string | null;
+  created_at: string;
 };

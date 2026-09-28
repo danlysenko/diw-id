@@ -26,8 +26,8 @@ function Row({ label, value, accent }: { label: string; value: string; accent?: 
 export default function WatchCard({ watch, verifiedAt, possessionVerified }: Props) {
   return (
     <section className="panel overflow-hidden">
-      <div className="grid gap-0 md:grid-cols-[1fr_1.2fr]">
-        <div className="flex items-center justify-center border-b border-line/60 bg-ink/60 p-8 md:border-b-0 md:border-r">
+      <div className="grid grid-cols-1 gap-0 md:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
+        <div className="flex items-center justify-center border-b border-line/60 bg-ink/60 p-6 sm:p-8 md:border-b-0 md:border-r">
           {watch.archive_photo_url ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -42,7 +42,7 @@ export default function WatchCard({ watch, verifiedAt, possessionVerified }: Pro
           )}
         </div>
 
-        <div className="p-8">
+        <div className="p-5 sm:p-8">
           <p className="eyebrow">Instance record</p>
           <h2 className="mt-2 font-display text-2xl text-neutral-50">{watch.collection}</h2>
 

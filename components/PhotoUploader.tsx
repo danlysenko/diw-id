@@ -24,7 +24,7 @@ export default function PhotoUploader({ name, title, hint, requirements, onSelec
   }
 
   return (
-    <div className="panel p-6">
+    <div className="panel p-5 sm:p-6">
       <p className="eyebrow">{title}</p>
       <p className="mt-2 text-sm text-neutral-700">{hint}</p>
 

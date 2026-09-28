@@ -1,29 +1,41 @@
+import Link from 'next/link';
 import { formatChallenge } from '@/lib/challenge';
 import { adminEnabled, isStaff } from '@/lib/adminAuth';
-import { listAllLegacySubmissions, listAllVerificationSessions } from '@/lib/sessions';
-import type { LegacySubmission, VerificationSession } from '@/lib/db';
+import {
+  listAllLegacySubmissions,
+  listAllVerificationSessions,
+  pruneAbandonedChallenges,
+} from '@/lib/sessions';
+import {
+  CASE_STATUS_LABEL,
+  SETTABLE_STATUSES,
+  legacyStatus,
+  statusLogsByCase,
+  verificationStatus,
+  type CaseStatus,
+} from '@/lib/caseStatus';
+import type { CheckResult } from '@/lib/checks';
+import type { CaseStatusLogEntry, LegacyEmail, LegacySubmission, VerificationSession } from '@/lib/db';
+import { emailsByCase } from '@/lib/email';
+import CheckList from '@/components/CheckList';
 import ClockFace from '@/components/ClockFace';
+import PageHeader from '@/components/PageHeader';
 import PhotoLightbox from '@/components/PhotoLightbox';
 import StaffLogin from './StaffLogin';
-import ReviewActions from './ReviewActions';
-import LegacyReviewActions from './LegacyReviewActions';
+import CaseStatusControl from './CaseStatusControl';
+import EmailCaseControl from './EmailCaseControl';
 
 export const dynamic = 'force-dynamic';
 
 type CaseColor = 'info' | 'warn' | 'good' | 'bad';
 
-const DOT_CLASS: Record<CaseColor, string> = {
-  info: 'bg-info',
-  warn: 'bg-warn',
-  good: 'bg-good',
-  bad: 'bg-bad',
-};
 const TEXT_CLASS: Record<CaseColor, string> = {
   info: 'text-info',
   warn: 'text-warn',
   good: 'text-good',
   bad: 'text-bad',
 };
+// Coloured edge on the header row only; `-ml-px` lays it over the card's own left border.
 const BORDER_CLASS: Record<CaseColor, string> = {
   info: 'border-l-info',
   warn: 'border-l-warn',
@@ -31,35 +43,21 @@ const BORDER_CLASS: Record<CaseColor, string> = {
   bad: 'border-l-bad',
 };
 
-function verificationMeta(status: VerificationSession['status']): { label: string; color: CaseColor } {
-  switch (status) {
-    case 'passed':
-      return { label: 'Verified', color: 'good' };
-    case 'failed':
-      return { label: 'Counterfeit', color: 'bad' };
-    case 'manual_review':
-      return { label: 'Pending review', color: 'warn' };
-    default:
-      return { label: 'New', color: 'info' };
-  }
-}
+const STATUS_COLOR: Record<CaseStatus, CaseColor> = {
+  new: 'info',
+  pending: 'warn',
+  verified: 'good',
+  counterfeit: 'bad',
+};
 
-function legacyMeta(status: string): { label: string; color: CaseColor } {
-  switch (status) {
-    case 'verified':
-    case 'resolved': // pre-existing value from before verified/counterfeit split
-      return { label: 'Verified', color: 'good' };
-    case 'counterfeit':
-      return { label: 'Counterfeit', color: 'bad' };
-    case 'under_review':
-      return { label: 'Pending review', color: 'warn' };
-    default:
-      return { label: 'New', color: 'info' };
-  }
-}
-
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleString('en-GB');
+/**
+ * SQLite's datetime('now') gives UTC as "YYYY-MM-DD HH:MM:SS" with no zone marker, which
+ * `new Date()` would read as local time — so mark it as UTC before formatting. ISO strings
+ * written by the app itself already carry their zone and pass through unchanged.
+ */
+function formatDate(value: string): string {
+  const utc = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(value) ? `${value.replace(' ', 'T')}Z` : value;
+  return new Date(utc).toLocaleString('en-GB');
 }
 
 type CaseRow =
@@ -67,21 +65,35 @@ type CaseRow =
       kind: 'verification';
       id: string;
       createdAt: string;
-      meta: { label: string; color: CaseColor };
+      status: CaseStatus;
       session: VerificationSession & { collection: string; base_watch: string };
     }
   | {
       kind: 'legacy';
       id: string;
       createdAt: string;
-      meta: { label: string; color: CaseColor };
+      status: CaseStatus;
       submission: LegacySubmission;
     };
 
-export default async function AdminPage() {
+const FILTERS: { status: CaseStatus; color: CaseColor; label: string }[] = [
+  { status: 'new', color: 'info', label: 'new' },
+  { status: 'pending', color: 'warn', label: 'pending review' },
+  { status: 'verified', color: 'good', label: 'verified' },
+  { status: 'counterfeit', color: 'bad', label: 'counterfeit' },
+];
+
+export default async function AdminPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ status?: string }>;
+}) {
+  const { status: rawFilter } = await searchParams;
+  const filter = FILTERS.find((f) => f.status === rawFilter)?.status ?? null;
+
   if (!adminEnabled()) {
     return (
-      <div className="panel p-8">
+      <div className="panel panel-pad lg:max-w-3xl">
         <p className="eyebrow">Staff review</p>
         <h1 className="mt-3 font-display text-2xl text-neutral-50">Review queue is not configured</h1>
         <p className="mt-4 max-w-2xl text-sm leading-relaxed text-neutral-600">
@@ -94,6 +106,7 @@ export default async function AdminPage() {
 
   if (!(await isStaff())) return <StaffLogin />;
 
+  pruneAbandonedChallenges();
   const sessions = listAllVerificationSessions();
   const legacySubmissions = listAllLegacySubmissions();
 
@@ -103,7 +116,7 @@ export default async function AdminPage() {
         kind: 'verification',
         id: session.id,
         createdAt: session.created_at,
-        meta: verificationMeta(session.status),
+        status: verificationStatus(session.status),
         session,
       }),
     ),
@@ -112,160 +125,344 @@ export default async function AdminPage() {
         kind: 'legacy',
         id: submission.id,
         createdAt: submission.created_at,
-        meta: legacyMeta(submission.status),
+        status: legacyStatus(submission.status),
         submission,
       }),
     ),
   ].sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
 
   const counts = { info: 0, warn: 0, good: 0, bad: 0 } as Record<CaseColor, number>;
-  for (const row of rows) counts[row.meta.color] += 1;
+  for (const row of rows) counts[STATUS_COLOR[row.status]] += 1;
+  const logs = statusLogsByCase();
+  const emailLogs = emailsByCase();
+  const visibleRows = filter ? rows.filter((row) => row.status === filter) : rows;
 
   return (
-    <div className="-mt-8">
-      <p className="eyebrow text-center">DiW Authentication</p>
-      <h1 className="mt-8 font-display text-3xl text-neutral-50">All cases</h1>
-      <p className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm">
-        <span className={TEXT_CLASS.info}>{counts.info} new</span>
-        <span className={TEXT_CLASS.warn}>{counts.warn} pending review</span>
-        <span className={TEXT_CLASS.good}>{counts.good} verified</span>
-        <span className={TEXT_CLASS.bad}>{counts.bad} counterfeit</span>
-      </p>
-
-      <div className="mt-10 space-y-4">
-        {rows.length === 0 && <p className="text-neutral-600">No cases yet.</p>}
-
-        {rows.map((row) => (
-          <details
-            key={`${row.kind}-${row.id}`}
-            className={`panel border-l-4 ${BORDER_CLASS[row.meta.color]}`}
+    <div>
+      <PageHeader eyebrow="DiW Authentication" title="All cases">
+        {/* The counts double as filters (?status=…); counts always cover every case. */}
+        <nav aria-label="Filter cases by status" className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
+          <Link
+            href="/admin"
+            aria-current={filter === null ? 'page' : undefined}
+            className={`transition hover:text-neutral-100 ${
+              filter === null ? 'text-neutral-100 underline underline-offset-4' : 'text-neutral-500'
+            }`}
           >
-            <summary className="flex cursor-pointer flex-wrap items-center justify-between gap-3 p-5">
-              <div className="flex min-w-0 items-center gap-4">
-                <span className={`inline-block h-2 w-2 shrink-0 rounded-full ${DOT_CLASS[row.meta.color]}`} />
-                <span className={`text-xs uppercase tracking-widest2 ${TEXT_CLASS[row.meta.color]}`}>
-                  {row.meta.label}
+            {rows.length} total
+          </Link>
+          {FILTERS.map((f) => (
+            <Link
+              key={f.status}
+              href={`/admin?status=${f.status}`}
+              aria-current={filter === f.status ? 'page' : undefined}
+              className={`${TEXT_CLASS[f.color]} transition hover:opacity-80 ${
+                filter === f.status ? 'underline underline-offset-4' : filter ? 'opacity-50' : ''
+              }`}
+            >
+              {counts[f.color]} {f.label}
+            </Link>
+          ))}
+        </nav>
+      </PageHeader>
+
+      <div className="space-y-4">
+        {visibleRows.length === 0 && (
+          <p className="text-neutral-600">
+            {filter ? `No ${CASE_STATUS_LABEL[filter].toLowerCase()} cases.` : 'No cases yet.'}
+          </p>
+        )}
+
+        {visibleRows.map((row) => (
+          // Shared `name` makes the entries an accordion: opening one closes the others.
+          <details
+            name="admin-case"
+            key={`${row.kind}-${row.id}`}
+            className="panel group"
+          >
+            <summary
+              className={`-ml-px flex cursor-pointer flex-wrap items-center justify-between gap-3 border-l-4 p-5 ${BORDER_CLASS[STATUS_COLOR[row.status]]}`}
+            >
+              <div className="flex min-w-0 items-center gap-5">
+                <span className={`text-xs uppercase tracking-widest2 ${TEXT_CLASS[STATUS_COLOR[row.status]]}`}>
+                  {CASE_STATUS_LABEL[row.status]}
                 </span>
+                <span aria-hidden className="h-3 w-px shrink-0 bg-line" />
                 <span className="text-xs uppercase tracking-widest2 text-neutral-400">
                   {row.kind === 'verification' ? 'Live' : 'Legacy'}
                 </span>
+                <span aria-hidden className="h-3 w-px shrink-0 bg-line" />
                 <span className="truncate text-neutral-100">
                   {row.kind === 'verification' ? row.session.diw_id : row.submission.model}
                 </span>
               </div>
-              <span className="shrink-0 text-xs text-neutral-500">{formatDate(row.createdAt)}</span>
+              <span className="flex shrink-0 items-center gap-4 text-xs text-neutral-500">
+                {formatDate(row.createdAt)}
+                <span aria-hidden className="text-neutral-400 transition group-open:rotate-180">
+                  ▾
+                </span>
+              </span>
             </summary>
 
-            <div className="border-t border-line p-6">
-              {row.kind === 'verification' ? (
-                <>
-                  <div className="flex flex-wrap items-start justify-between gap-6">
-                    <div>
-                      <h2 className="font-display text-xl text-neutral-50">{row.session.diw_id}</h2>
-                      <p className="mt-1 text-sm text-neutral-600">
-                        {row.session.collection} — {row.session.base_watch}
-                      </p>
-                      <p className="mt-3 text-xs uppercase tracking-widest2 text-neutral-500">
-                        {row.session.flow} flow · submitted {formatDate(row.session.created_at)}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <ClockFace hour={row.session.challenge_hour} minute={row.session.challenge_minute} size={78} />
-                      <div>
-                        <p className="text-xs uppercase tracking-widest2 text-neutral-500">Requested</p>
-                        <p className="font-display text-lg text-neutral-100">
-                          {formatChallenge(row.session.challenge_hour, row.session.challenge_minute)}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="mt-6">
-                    <PhotoLightbox
-                      photos={[
-                        {
-                          path: row.session.watch_photo_path,
-                          label: 'Dial photo',
-                          exif: row.session.watch_photo_has_exif,
-                        },
-                        {
-                          path: row.session.id_photo_path,
-                          label: 'DiW ID photo',
-                          exif: row.session.id_photo_has_exif,
-                        },
-                      ]
-                        .filter((p): p is { path: string; label: string; exif: number | null } => Boolean(p.path))
-                        .map((p) => ({
-                          path: p.path,
-                          label: p.label,
-                          meta: (
-                            <span className={p.exif ? 'text-good' : 'text-warn'}>
-                              {p.exif ? 'capture metadata present' : 'no capture metadata'}
-                            </span>
-                          ),
-                        }))}
-                    />
-                  </div>
-
-                  <div className="mt-6">
-                    {row.session.status === 'manual_review' ? (
-                      <ReviewActions sessionId={row.session.id} />
-                    ) : (
-                      <p className="text-sm text-neutral-600">
-                        {row.session.status === 'passed' || row.session.status === 'failed'
-                          ? `Resolved automatically as ${row.session.status}${
-                              row.session.reviewed_by ? ` by ${row.session.reviewed_by}` : ''
-                            }.`
-                          : 'Still in progress — nothing for a reviewer to do yet.'}
-                      </p>
-                    )}
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className="flex flex-wrap items-start justify-between gap-6">
-                    <div>
-                      <h2 className="font-display text-xl text-neutral-50">{row.submission.model}</h2>
-                      <p className="mt-1 text-sm text-neutral-600">
-                        Approx. {row.submission.approx_year} · bought at {row.submission.purchase_location}
-                      </p>
-                      {row.submission.original_serial && (
-                        <p className="mt-1 text-sm text-neutral-600">
-                          Base watch serial: {row.submission.original_serial}
-                        </p>
-                      )}
-                      {row.submission.contact_email && (
-                        <p className="mt-1 text-sm text-neutral-600">{row.submission.contact_email}</p>
-                      )}
-                    </div>
-                    <p className="text-xs uppercase tracking-widest2 text-neutral-500">
-                      submitted {formatDate(row.submission.created_at)}
-                    </p>
-                  </div>
-
-                  <div className="mt-6">
-                    <PhotoLightbox
-                      photos={(JSON.parse(row.submission.photo_paths) as string[]).map((path, index) => ({
-                        path,
-                        label: `${row.submission.model} — photo ${index + 1}`,
-                      }))}
-                    />
-                  </div>
-
-                  <div className="mt-6">
-                    <LegacyReviewActions
-                      caseId={row.submission.id}
-                      status={row.submission.status}
-                      reviewedBy={row.submission.reviewed_by}
-                      reviewNote={row.submission.review_note}
-                    />
-                  </div>
-                </>
-              )}
-            </div>
+            <CaseBody
+              row={row}
+              log={logs.get(`${row.kind}:${row.id}`) ?? []}
+              emailLog={row.kind === 'legacy' ? (emailLogs.get(row.id) ?? []) : []}
+            />
           </details>
         ))}
       </div>
     </div>
   );
+}
+
+/**
+ * An expanded case. Wide screens: the evidence on the left (details, the requested time right
+ * above the photos, automatic checks) and the review panel on the right, pinned while the
+ * evidence scrolls. Narrower screens stack the review panel under the evidence.
+ */
+function CaseBody({
+  row,
+  log,
+  emailLog,
+}: {
+  row: CaseRow;
+  log: CaseStatusLogEntry[];
+  emailLog: LegacyEmail[];
+}) {
+  const requested =
+    row.kind === 'verification'
+      ? { hour: row.session.challenge_hour, minute: row.session.challenge_minute }
+      : { hour: row.submission.challenge_hour, minute: row.submission.challenge_minute };
+
+  return (
+    <div className="grid grid-cols-1 border-t border-line xl:grid-cols-[minmax(0,1fr)_16rem]">
+      <div className="space-y-8 p-5 sm:p-6">
+        {row.kind === 'verification' ? (
+          <VerificationEvidence session={row.session} />
+        ) : (
+          <LegacyEvidence submission={row.submission} emailLog={emailLog} />
+        )}
+      </div>
+
+      <aside className="border-t border-line bg-white/[0.02] p-5 sm:p-6 xl:border-l xl:border-t-0">
+        <div className="space-y-8 xl:sticky xl:top-6">
+          {requested.hour !== null && requested.minute !== null && (
+            <div>
+              <p className="label">Requested time</p>
+              <div className="flex items-center gap-4">
+                <ClockFace hour={requested.hour} minute={requested.minute} size={72} showSeconds={false} />
+                <p className="font-display text-2xl text-neutral-50">
+                  {formatChallenge(requested.hour, requested.minute)}
+                </p>
+              </div>
+            </div>
+          )}
+          <CaseFooter kind={row.kind} caseId={row.id} status={row.status} log={log} />
+        </div>
+      </aside>
+    </div>
+  );
+}
+
+function VerificationEvidence({
+  session,
+}: {
+  session: VerificationSession & { collection: string; base_watch: string };
+}) {
+  const photos = [
+    { path: session.watch_photo_path, label: 'Dial photo', exif: session.watch_photo_has_exif },
+    { path: session.id_photo_path, label: 'DiW ID photo', exif: session.id_photo_has_exif },
+  ].filter((p): p is { path: string; label: string; exif: number | null } => Boolean(p.path));
+  const checks = parseChecks(session.checks_json);
+
+  return (
+    <>
+      <div>
+        <h2 className="font-display text-2xl text-neutral-50">{session.diw_id}</h2>
+        <DetailGrid
+          items={[
+            ['Collection', session.collection],
+            ['Base watch', session.base_watch],
+            ['Flow', session.flow === 'dealer' ? 'Dealer' : 'Owner'],
+            ['Submitted', formatDate(session.created_at)],
+          ]}
+        />
+      </div>
+
+      <PhotoSection>
+        <PhotoLightbox
+          photos={photos.map((p) => ({
+            path: p.path,
+            label: p.label,
+            meta: (
+              <span key={p.path} className={p.exif ? 'text-good' : 'text-warn'}>
+                {p.exif ? 'capture metadata present' : 'no capture metadata'}
+              </span>
+            ),
+          }))}
+        />
+      </PhotoSection>
+
+      {checks.length > 0 && (
+        <section>
+          <p className="label">Automatic checks</p>
+          <CheckList checks={checks} />
+        </section>
+      )}
+    </>
+  );
+}
+
+function LegacyEvidence({
+  submission,
+  emailLog,
+}: {
+  submission: LegacySubmission;
+  emailLog: LegacyEmail[];
+}) {
+  const photos = [
+    ...(submission.dial_photo_path && submission.challenge_hour !== null
+      ? [
+          {
+            path: submission.dial_photo_path,
+            label: `Dial at ${formatChallenge(submission.challenge_hour, submission.challenge_minute ?? 0)}`,
+          },
+        ]
+      : []),
+    ...(JSON.parse(submission.photo_paths) as string[]).map((path, index) => ({
+      path,
+      label: `Photo ${index + 1}`,
+    })),
+  ];
+
+  return (
+    <>
+      <div>
+        <h2 className="font-display text-2xl text-neutral-50">{submission.model}</h2>
+        <DetailGrid
+          items={[
+            ['Approx. year', submission.approx_year],
+            ['Bought at', submission.purchase_location],
+            ['Base watch serial', submission.original_serial ?? '—'],
+            [
+              'Contact email',
+              submission.contact_email ? (
+                <a
+                  href={`mailto:${submission.contact_email}`}
+                  className="text-gold underline-offset-4 hover:underline"
+                >
+                  {submission.contact_email}
+                </a>
+              ) : (
+                '—'
+              ),
+            ],
+            ...(submission.contact_email
+              ? ([
+                  [
+                    'Verification link',
+                    <EmailCaseControl
+                      key="email"
+                      caseId={submission.id}
+                      defaultSubject={`Your DiW archive case — ${submission.model}`}
+                      log={emailLog}
+                    />,
+                  ],
+                ] satisfies [string, React.ReactNode][])
+              : []),
+            ['Submitted', formatDate(submission.created_at)],
+          ]}
+        />
+      </div>
+
+      <PhotoSection>
+        <PhotoLightbox photos={photos} />
+      </PhotoSection>
+    </>
+  );
+}
+
+/** Label / value pairs in a grid that reads at a glance. */
+function DetailGrid({ items }: { items: [string, React.ReactNode][] }) {
+  return (
+    <dl className="mt-5 grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2 2xl:grid-cols-3">
+      {items.map(([term, value]) => (
+        <div key={term}>
+          <dt className="text-xs uppercase tracking-widest2 text-neutral-500">{term}</dt>
+          <dd className="mt-1 break-words text-sm text-neutral-100">{value}</dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
+/** The case's photos; the requested time to compare them against is in the review panel. */
+function PhotoSection({ children }: { children: React.ReactNode }) {
+  return (
+    <section>
+      <p className="label">Photos</p>
+      {children}
+    </section>
+  );
+}
+
+function parseChecks(json: string | null): CheckResult[] {
+  if (!json) return [];
+  try {
+    return JSON.parse(json) as CheckResult[];
+  } catch {
+    return [];
+  }
+}
+
+/** The review panel for a case: status buttons, the change log and "Delete case". */
+function CaseFooter({
+  kind,
+  caseId,
+  status,
+  log,
+}: {
+  kind: 'verification' | 'legacy';
+  caseId: string;
+  status: CaseStatus;
+  log: CaseStatusLogEntry[];
+}) {
+  // The control lays out the footer (status left, log + delete right); the log is rendered here.
+  return (
+    <CaseStatusControl
+      kind={kind}
+      caseId={caseId}
+      current={status}
+      options={SETTABLE_STATUSES}
+      log={
+        <>
+          <p className="label">Log</p>
+          {log.length === 0 ? (
+            <p className="text-sm text-neutral-600">No changes recorded yet.</p>
+          ) : (
+            <ol className="space-y-3 border-l border-line pl-4">
+              {log.map((entry) => (
+                <li key={entry.id} className="text-sm">
+                  <p className="text-xs text-neutral-500">
+                    {formatDate(entry.created_at)} · {entry.changed_by}
+                  </p>
+                  <p className="text-neutral-100">
+                    {entry.from_status
+                      ? `${label(entry.from_status)} → ${label(entry.to_status)}`
+                      : `Submitted as ${label(entry.to_status)}`}
+                  </p>
+                  {entry.note && <p className="italic text-warn">“{entry.note}”</p>}
+                </li>
+              ))}
+            </ol>
+          )}
+        </>
+      }
+    />
+  );
+}
+
+function label(status: string): string {
+  return CASE_STATUS_LABEL[status as CaseStatus] ?? status;
 }
