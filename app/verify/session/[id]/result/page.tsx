@@ -40,7 +40,7 @@ export default async function ResultPage({ params }: { params: Promise<{ id: str
               <h1 className="mt-3 font-display text-3xl tracking-wide text-neutral-50 sm:text-4xl">
                 AUTHENTIC DiW
               </h1>
-              <p className="mt-4 max-w-2xl text-sm leading-relaxed text-neutral-400">
+              <p className="mt-4 max-w-2xl text-base leading-relaxed text-neutral-400">
                 The requested hand position, the DiW ID engraving and the archive configuration all
                 matched, inside the verification window.
               </p>
@@ -52,7 +52,7 @@ export default async function ResultPage({ params }: { params: Promise<{ id: str
                 <h2 className="mt-3 font-display text-xl text-neutral-100">
                   Verified by DiW — valid for 24 hours
                 </h2>
-                <p className="mt-3 max-w-2xl text-sm leading-relaxed text-neutral-400">
+                <p className="mt-3 max-w-2xl text-base leading-relaxed text-neutral-400">
                   Send this to a buyer. They open it on this site and read the result from DiW
                   directly, so they do not have to trust photographs sent by the seller. No owner
                   details are shown.
@@ -85,7 +85,7 @@ export default async function ResultPage({ params }: { params: Promise<{ id: str
           <div className="panel panel-pad border-warn/40 bg-warn/5">
             <p className="eyebrow text-warn">Sent for manual review</p>
             <h1 className="mt-3 font-display text-3xl text-neutral-50">A DiW reviewer is checking</h1>
-            <p className="mt-4 max-w-2xl text-sm leading-relaxed text-neutral-400">
+            <p className="mt-4 max-w-2xl text-base leading-relaxed text-neutral-400">
               The automated checks did not settle every point, so your submission has gone to DiW
               Authentication. The instance record and verification link stay closed until a
               reviewer confirms the result. Keep this page — it updates in place.
@@ -111,7 +111,7 @@ export default async function ResultPage({ params }: { params: Promise<{ id: str
         <div className="panel panel-pad border-bad/40 bg-bad/5">
           <p className="eyebrow text-bad">Not verified</p>
           <h1 className="mt-3 font-display text-3xl text-neutral-50">Live verification failed</h1>
-          <p className="mt-4 max-w-2xl text-sm leading-relaxed text-neutral-400">
+          <p className="mt-4 max-w-2xl text-base leading-relaxed text-neutral-400">
             {session.fail_reason ?? 'One or more checks did not pass.'} No watch details are
             released for a failed verification. If you believe this is wrong, contact DiW
             Authentication with the reference below.

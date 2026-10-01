@@ -18,7 +18,7 @@ export default function CopyLink({ path }: { path: string }) {
 
   return (
     <div className="flex flex-wrap items-center gap-3">
-      <code className="min-w-0 flex-1 basis-48 truncate rounded-lg border border-line bg-ink px-4 py-3 text-xs text-neutral-300">
+      <code className="min-w-0 flex-1 basis-48 truncate rounded-lg border border-line bg-ink px-4 py-3 text-sm text-neutral-300">
         {url}
       </code>
       <button type="button" className="btn-ghost w-full sm:w-auto" onClick={copy}>

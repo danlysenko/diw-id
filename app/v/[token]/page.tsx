@@ -28,7 +28,7 @@ export default async function VerificationLinkPage({
       <div className="panel panel-pad lg:max-w-3xl">
         <p className="eyebrow text-neutral-600">Link expired</p>
         <h1 className="mt-3 font-display text-3xl text-neutral-50">This verification has expired</h1>
-        <p className="mt-4 max-w-2xl text-sm leading-relaxed text-neutral-400">
+        <p className="mt-4 max-w-2xl text-base leading-relaxed text-neutral-400">
           DiW verification links are valid for 24 hours so they cannot be recycled from an earlier
           sale. Ask the seller to run a fresh live verification and send you a new link.
         </p>
@@ -52,7 +52,7 @@ export default async function VerificationLinkPage({
             This DiW watch successfully passed a live verification on{' '}
             {formatDate(session.verified_at)}.
           </h1>
-          <p className="mt-5 max-w-2xl text-sm leading-relaxed text-neutral-400">
+          <p className="mt-5 max-w-2xl text-base leading-relaxed text-neutral-400">
             At that moment, someone holding this watch set its hands to a position DiW chose at
             random and photographed the result inside a {CHALLENGE_WINDOW_TEXT} window. You are
             reading this confirmation on diw.com, not from the seller.
@@ -62,7 +62,7 @@ export default async function VerificationLinkPage({
           </p>
         </div>
 
-        <p className="max-w-2xl text-xs leading-relaxed text-neutral-500">
+        <p className="max-w-2xl text-sm leading-relaxed text-neutral-500">
           A live verification confirms authenticity and physical possession at the time it was run.
           It does not confirm legal ownership, and DiW never discloses who holds the watch.
         </p>

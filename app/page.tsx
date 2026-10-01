@@ -40,10 +40,10 @@ export default function HomePage() {
           <ol className="mt-4 divide-y divide-black/10">
             {STEPS.map((step, index) => (
               <li key={step.title} className="flex gap-4 py-3 last:pb-0">
-                <span className="w-5 shrink-0 font-display text-sm leading-5 text-gold">{index + 1}.</span>
+                <span className="w-5 shrink-0 font-display text-base leading-5 text-gold">{index + 1}.</span>
                 <div>
-                  <h3 className="text-sm text-neutral-100">{step.title}</h3>
-                  <p className="mt-0.5 text-xs leading-relaxed text-neutral-600">{step.body}</p>
+                  <h3 className="text-base text-neutral-100">{step.title}</h3>
+                  <p className="mt-0.5 text-sm leading-relaxed text-neutral-600">{step.body}</p>
                 </div>
               </li>
             ))}
@@ -54,7 +54,7 @@ export default function HomePage() {
       <div className="mt-10 grid grid-cols-1 gap-4 md:grid-cols-2 xl:gap-6">
         <section className="panel panel-pad">
           <h2 className="font-display text-xl text-neutral-100">Buying on the secondary market?</h2>
-          <p className="mt-2 max-w-xl text-sm leading-relaxed text-neutral-600">
+          <p className="mt-2 max-w-xl text-base leading-relaxed text-neutral-600">
             Ask for a DiW verification link, not photographs. Issued by DiW and valid 24 hours, it
             can’t be recycled from an old sale — read the result here, not on trust.
           </p>
@@ -62,7 +62,7 @@ export default function HomePage() {
 
         <Link href="/dealer" className="panel panel-pad group flex flex-col transition hover:border-gold">
           <h2 className="font-display text-xl text-neutral-100">Selling as a dealer?</h2>
-          <p className="mt-2 max-w-xl text-sm leading-relaxed text-neutral-600">
+          <p className="mt-2 max-w-xl text-base leading-relaxed text-neutral-600">
             Run the same live verification and send the buyer a DiW link — proof they read at the
             source instead of taking your photographs on trust.
           </p>

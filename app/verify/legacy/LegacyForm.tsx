@@ -61,7 +61,7 @@ export default function LegacyForm({ challenge }: { challenge: Challenge }) {
         <h2 className="mt-3 font-display text-2xl text-neutral-50">
           Your Legacy case is with DiW Authentication
         </h2>
-        <p className="mt-4 text-sm leading-relaxed text-neutral-600">
+        <p className="mt-4 text-base leading-relaxed text-neutral-600">
           A member of the team will match your watch against the DiW build archive. Legacy cases are
           reviewed by a person, so they take longer than an instant DiW ID verification.
         </p>
@@ -99,7 +99,7 @@ export default function LegacyForm({ challenge }: { challenge: Challenge }) {
             <Countdown expiresAt={challenge.expiresAt} />
           )}
         </p>
-        <p className="mt-4 text-sm leading-relaxed text-neutral-600">
+        <p className="mt-4 text-base leading-relaxed text-neutral-600">
           Generated for this case only. Move the hands to this time and include a photo of the dial
           — it shows the watch is with you, not in an old photograph.
         </p>
@@ -174,7 +174,7 @@ export default function LegacyForm({ challenge }: { challenge: Challenge }) {
             onChange={(e) => setPhotoCount(e.target.files?.length ?? 0)}
             required
           />
-          <p className="mt-2 text-xs text-neutral-600">
+          <p className="mt-2 text-sm text-neutral-600">
             Include one front-on shot of the dial set to{' '}
             <span className="text-gold">{time}</span>, plus the caseback, lugs and any engraving.{' '}
             {photoCount > 0 && `${photoCount} selected.`}

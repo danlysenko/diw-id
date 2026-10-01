@@ -18,7 +18,7 @@ function Row({ label, value, accent }: { label: string; value: string; accent?: 
   return (
     <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-line/60 py-3 last:border-0">
       <dt className="text-xs uppercase tracking-widest2 text-neutral-600">{label}</dt>
-      <dd className={accent ? 'text-sm text-good' : 'text-sm text-neutral-100'}>{value}</dd>
+      <dd className={accent ? 'text-base text-good' : 'text-base text-neutral-100'}>{value}</dd>
     </div>
   );
 }
@@ -57,7 +57,7 @@ export default function WatchCard({ watch, verifiedAt, possessionVerified }: Pro
             {verifiedAt && <Row label="Verification date" value={formatDate(verifiedAt)} />}
           </dl>
 
-          <p className="mt-6 text-xs leading-relaxed text-neutral-500">
+          <p className="mt-6 text-sm leading-relaxed text-neutral-500">
             DiW never publishes owner identity, contact details or transaction history on an
             instance record.
           </p>

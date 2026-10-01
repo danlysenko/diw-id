@@ -30,13 +30,13 @@ export default async function EnterDiwIdPage({
           <DiwIdForm flow={flow} />
         </div>
 
-        <aside className="space-y-4 text-sm leading-relaxed text-neutral-600 lg:pt-2">
+        <aside className="space-y-4 text-base leading-relaxed text-neutral-600 lg:pt-2">
           <p>
             <span className="text-neutral-100">What happens next.</span> DiW issues a random hand
             position for this watch. You have {CHALLENGE_WINDOW_TEXT} to set the hands and send two
             photos.
           </p>
-          <p className="text-xs text-neutral-500">
+          <p className="text-sm text-neutral-500">
             DiW does not display any details of the watch at this stage. A valid number alone proves
             nothing — the instance record opens only after live verification passes.
           </p>

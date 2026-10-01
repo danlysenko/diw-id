@@ -28,7 +28,7 @@ export default function PhotoUploader({ name, title, hint, requirements, onSelec
       <p className="eyebrow">{title}</p>
       <p className="mt-2 text-sm text-neutral-700">{hint}</p>
 
-      <ul className="mt-4 space-y-1 text-xs text-neutral-600">
+      <ul className="mt-4 space-y-1 text-sm text-neutral-600">
         {requirements.map((r) => (
           <li key={r}>— {r}</li>
         ))}

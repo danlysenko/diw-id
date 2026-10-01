@@ -72,7 +72,7 @@ export default async function LiveChallengePage({ params }: { params: Promise<{ 
               watch is with you rather than in an old photograph.
             </p>
 
-            <ul className="mt-6 space-y-2 text-sm text-neutral-500">
+            <ul className="mt-6 space-y-2 text-base text-neutral-500">
               <li>— Seconds are not checked; only the hour and minute hands matter.</li>
               <li>— Do not wind the date forward; only the time is being read.</li>
               <li>

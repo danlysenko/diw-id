@@ -41,10 +41,10 @@ export default function DealerPage() {
           <ol className="mt-4 divide-y divide-black/10">
             {DEALER_STEPS.map((step, index) => (
               <li key={step.title} className="flex gap-4 py-3 last:pb-0">
-                <span className="w-5 shrink-0 font-display text-sm leading-5 text-gold">{index + 1}.</span>
+                <span className="w-5 shrink-0 font-display text-base leading-5 text-gold">{index + 1}.</span>
                 <div>
-                  <h3 className="text-sm text-neutral-100">{step.title}</h3>
-                  <p className="mt-0.5 text-xs leading-relaxed text-neutral-600">{step.body}</p>
+                  <h3 className="text-base text-neutral-100">{step.title}</h3>
+                  <p className="mt-0.5 text-sm leading-relaxed text-neutral-600">{step.body}</p>
                 </div>
               </li>
             ))}
@@ -54,7 +54,7 @@ export default function DealerPage() {
         <div className="space-y-6">
           <div className="panel panel-pad">
             <h2 className="font-display text-lg text-neutral-100">What the buyer sees</h2>
-            <p className="mt-3 text-sm leading-relaxed text-neutral-500">
+            <p className="mt-3 text-base leading-relaxed text-neutral-500">
               The date of the live verification, the collection, the base watch, materials, the DiW
               ID and the current status — with the archive photograph of that exact instance. No
               owner or dealer identity appears anywhere on the page.
@@ -63,7 +63,7 @@ export default function DealerPage() {
 
           <div className="panel panel-pad">
             <h2 className="font-display text-lg text-neutral-100">Why 24 hours</h2>
-            <p className="mt-3 text-sm leading-relaxed text-neutral-500">
+            <p className="mt-3 text-base leading-relaxed text-neutral-500">
               A short-lived link cannot be saved and reused for a different sale months later. If a
               deal takes longer, run the verification again — it takes a couple of minutes.
             </p>
