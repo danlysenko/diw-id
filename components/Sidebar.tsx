@@ -61,7 +61,7 @@ export default function Sidebar() {
 
         <div className="mt-14">
           <nav>
-            <ul className="space-y-2 text-sm uppercase tracking-wide3">
+            <ul className="space-y-2 text-xs uppercase tracking-wide3">
               {NAV.map((item) => (
                 <li key={item.href}>
                   <Link
