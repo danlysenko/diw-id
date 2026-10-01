@@ -1,11 +1,20 @@
 import { NextResponse } from 'next/server';
 import { ADMIN_COOKIE, adminEnabled, keyMatches } from '@/lib/adminAuth';
+import { clientIp, rateLimit } from '@/lib/rateLimit';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request) {
   if (!adminEnabled()) {
     return NextResponse.json({ error: 'Staff review is not configured.' }, { status: 503 });
+  }
+
+  const limit = rateLimit(`admin-login:${clientIp(request)}`, 5, 60_000);
+  if (!limit.ok) {
+    return NextResponse.json(
+      { error: 'Too many attempts. Try again in a minute.' },
+      { status: 429, headers: { 'Retry-After': String(limit.retryAfterSeconds) } },
+    );
   }
 
   const body = (await request.json().catch(() => null)) as { key?: unknown } | null;

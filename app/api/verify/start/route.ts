@@ -1,10 +1,19 @@
 import { NextResponse } from 'next/server';
 import { normalizeDiwId } from '@/lib/diwId';
+import { clientIp, rateLimit } from '@/lib/rateLimit';
 import { createSession, findWatch } from '@/lib/sessions';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request) {
+  const limit = rateLimit(`verify-start:${clientIp(request)}`, 10, 60_000);
+  if (!limit.ok) {
+    return NextResponse.json(
+      { error: 'Too many attempts. Try again in a minute.' },
+      { status: 429, headers: { 'Retry-After': String(limit.retryAfterSeconds) } },
+    );
+  }
+
   const body = (await request.json().catch(() => null)) as
     | { diwId?: unknown; flow?: unknown }
     | null;
