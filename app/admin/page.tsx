@@ -17,7 +17,7 @@ import {
 import type { CheckResult } from '@/lib/checks';
 import type { CaseStatusLogEntry, LegacyEmail, LegacySubmission, VerificationSession } from '@/lib/db';
 import { emailsByCase } from '@/lib/email';
-import { formatDateTime } from '@/lib/formatDate';
+import { DATE_CLASS, formatDateTime } from '@/lib/formatDate';
 import CheckList from '@/components/CheckList';
 import ClockFace from '@/components/ClockFace';
 import PageHeader from '@/components/PageHeader';
@@ -69,7 +69,7 @@ type CaseRow =
 
 const FILTERS: { status: CaseStatus; color: CaseColor; label: string }[] = [
   { status: 'new', color: 'info', label: 'new' },
-  { status: 'pending', color: 'warn', label: 'pending review' },
+  { status: 'pending', color: 'warn', label: 'pending' },
   { status: 'verified', color: 'good', label: 'verified' },
   { status: 'counterfeit', color: 'bad', label: 'counterfeit' },
 ];
@@ -188,7 +188,7 @@ export default async function AdminPage({
                 </span>
               </div>
               <span className="flex shrink-0 items-center gap-4 text-xs text-neutral-500">
-                {formatDateTime(row.createdAt)}
+                <span className={DATE_CLASS}>{formatDateTime(row.createdAt)}</span>
                 <span aria-hidden className="text-neutral-400 transition group-open:rotate-180">
                   ▾
                 </span>
@@ -276,7 +276,7 @@ function VerificationEvidence({
             ['Collection', session.collection],
             ['Base watch', session.base_watch],
             ['Flow', session.flow === 'dealer' ? 'Dealer' : 'Owner'],
-            ['Submitted', formatDateTime(session.created_at)],
+            ['Submitted', <span className={DATE_CLASS}>{formatDateTime(session.created_at)}</span>],
           ]}
         />
       </div>
@@ -362,7 +362,7 @@ function LegacyEvidence({
                   ],
                 ] satisfies [string, React.ReactNode][])
               : []),
-            ['Submitted', formatDateTime(submission.created_at)],
+            ['Submitted', <span className={DATE_CLASS}>{formatDateTime(submission.created_at)}</span>],
           ]}
         />
       </div>
@@ -436,7 +436,7 @@ function CaseFooter({
               {log.map((entry) => (
                 <li key={entry.id} className="text-sm">
                   <p className="text-xs text-neutral-500">
-                    {formatDateTime(entry.created_at)} · {entry.changed_by}
+                    <span className={DATE_CLASS}>{formatDateTime(entry.created_at)}</span> · {entry.changed_by}
                   </p>
                   <p className="text-neutral-100">
                     {entry.from_status

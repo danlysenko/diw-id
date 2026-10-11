@@ -18,6 +18,14 @@ function toDate(value: string | Date): Date {
   return new Date(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(value) ? `${value.replace(' ', 'T')}Z` : value);
 }
 
+/** "11.10.2026" */
+export function formatDateOnly(value: string | Date): string {
+  return formatDateTime(value).split(',')[0];
+}
+
+/** Letter-spacing for dates, whose digits and dots otherwise read cramped in Circe. */
+export const DATE_CLASS = 'tracking-widest';
+
 /** "11.10.2026, 09:02" */
 export function formatDateTime(value: string | Date): string {
   const p = Object.fromEntries(parts.formatToParts(toDate(value)).map(({ type, value: v }) => [type, v]));

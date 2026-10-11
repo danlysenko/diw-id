@@ -1,4 +1,5 @@
 import type { Watch } from '@/lib/db';
+import { DATE_CLASS, formatDateOnly } from '@/lib/formatDate';
 
 type Props = {
   watch: Watch;
@@ -6,19 +7,21 @@ type Props = {
   possessionVerified?: boolean;
 };
 
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString('en-GB', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  });
-}
-
-function Row({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
+function Row({
+  label,
+  value,
+  accent,
+  className = '',
+}: {
+  label: string;
+  value: string;
+  accent?: boolean;
+  className?: string;
+}) {
   return (
     <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-line/60 py-3 last:border-0">
       <dt className="text-xs uppercase tracking-widest2 text-neutral-600">{label}</dt>
-      <dd className={accent ? 'text-base text-good' : 'text-base text-neutral-100'}>{value}</dd>
+      <dd className={`text-base ${accent ? 'text-good' : 'text-neutral-100'} ${className}`}>{value}</dd>
     </div>
   );
 }
@@ -54,7 +57,9 @@ export default function WatchCard({ watch, verifiedAt, possessionVerified }: Pro
             <Row label="Production year" value={String(watch.production_year)} />
             <Row label="Status" value={watch.status} accent={watch.status === 'Authentic'} />
             {possessionVerified && <Row label="Physical possession" value="Verified" accent />}
-            {verifiedAt && <Row label="Verification date" value={formatDate(verifiedAt)} />}
+            {verifiedAt && (
+              <Row label="Verification date" value={formatDateOnly(verifiedAt)} className={DATE_CLASS} />
+            )}
           </dl>
 
           <p className="mt-6 text-sm leading-relaxed text-neutral-500">

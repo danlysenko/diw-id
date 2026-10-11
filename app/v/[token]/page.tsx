@@ -2,18 +2,10 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import WatchCard from '@/components/WatchCard';
 import { CHALLENGE_WINDOW_TEXT, isExpired } from '@/lib/challenge';
-import { formatDateTime } from '@/lib/formatDate';
+import { DATE_CLASS, formatDateOnly, formatDateTime } from '@/lib/formatDate';
 import { findWatch, getSessionByToken } from '@/lib/sessions';
 
 export const dynamic = 'force-dynamic';
-
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString('en-GB', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  });
-}
 
 export default async function VerificationLinkPage({
   params,
@@ -51,7 +43,7 @@ export default async function VerificationLinkPage({
           <p className="eyebrow text-good">Verified by DiW</p>
           <h1 className="mt-3 font-display text-2xl leading-snug text-neutral-50 sm:text-3xl">
             This DiW watch successfully passed a live verification on{' '}
-            {formatDate(session.verified_at)}.
+            <span className={DATE_CLASS}>{formatDateOnly(session.verified_at)}</span>.
           </h1>
           <p className="mt-5 max-w-2xl text-base leading-relaxed text-neutral-400">
             At that moment, someone holding this watch set its hands to a position DiW chose at

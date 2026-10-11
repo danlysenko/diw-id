@@ -7,7 +7,7 @@ export type CaseKind = 'verification' | 'legacy';
 
 export const CASE_STATUS_LABEL: Record<CaseStatus, string> = {
   new: 'New',
-  pending: 'Pending review',
+  pending: 'Pending',
   verified: 'Verified',
   counterfeit: 'Counterfeit',
 };
