@@ -2,6 +2,7 @@ import crypto from 'node:crypto';
 import { NextResponse } from 'next/server';
 import { logStatusChange } from '@/lib/caseStatus';
 import { db } from '@/lib/db';
+import { describeOrigin } from '@/lib/geo';
 import { consumeLegacyChallenge } from '@/lib/sessions';
 import { isUploadError, storePhoto } from '@/lib/uploads';
 
@@ -75,7 +76,7 @@ export async function POST(request: Request) {
     challenge.challenge_minute,
   );
 
-  logStatusChange({ kind: 'legacy', caseId: id, from: null, to: 'new', by: 'Customer', note: 'Case opened' });
+  logStatusChange({ kind: 'legacy', caseId: id, from: null, to: 'new', by: 'Customer', note: describeOrigin(request) });
 
   return NextResponse.json({ caseId: id });
 }

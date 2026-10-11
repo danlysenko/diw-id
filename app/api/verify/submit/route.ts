@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { logStatusChange, verificationStatus } from '@/lib/caseStatus';
 import { runChecks } from '@/lib/checks';
+import { describeOrigin } from '@/lib/geo';
 import { isUploadError, storePhoto } from '@/lib/uploads';
 import { findWatch, getSession, issueVerificationLink, recordPhotoHashes } from '@/lib/sessions';
 
@@ -86,7 +87,7 @@ export async function POST(request: Request) {
     from: null,
     to: verificationStatus(outcome.status),
     by: 'Automatic checks',
-    note: outcome.failReason,
+    note: [describeOrigin(request), outcome.failReason].filter(Boolean).join(' · '),
   });
 
   return NextResponse.json({ status: outcome.status });
