@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import type { LegacyEmail } from '@/lib/db';
+import { formatDateTime } from '@/lib/formatDate';
 
 type Props = {
   caseId: string;
@@ -110,7 +111,7 @@ export default function EmailCaseControl({ caseId, defaultSubject, log }: Props)
           {log.map((entry) => (
             <li key={entry.id} className="text-sm">
               <p className="text-xs text-neutral-500">
-                {new Date(entry.created_at.replace(' ', 'T') + 'Z').toLocaleString('en-GB')} · {entry.sent_by}
+                {formatDateTime(entry.created_at)} · {entry.sent_by}
               </p>
               <p className={entry.ok ? 'text-neutral-100' : 'text-bad'}>
                 {entry.ok ? entry.subject : `Failed — ${entry.error}`}

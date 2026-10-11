@@ -2,6 +2,7 @@ import type { CheckResult } from './checks';
 import { formatChallenge } from './challenge';
 import type { LegacySubmission, VerificationSession, Watch } from './db';
 import { notifyStaff } from './email';
+import { formatDateTime } from './formatDate';
 
 function appUrl(path: string): string | null {
   const base = process.env.APP_URL?.replace(/\/+$/, '');
@@ -16,7 +17,7 @@ function lines(rows: [string, string | null | undefined][]): string {
 }
 
 function submittedAt(): string {
-  return new Date().toLocaleString('en-GB', { timeZone: 'Europe/London', timeZoneName: 'short' });
+  return formatDateTime(new Date());
 }
 
 export function notifyNewLegacyCase(c: LegacySubmission, origin: string): Promise<void> {

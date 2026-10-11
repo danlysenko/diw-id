@@ -17,6 +17,7 @@ import {
 import type { CheckResult } from '@/lib/checks';
 import type { CaseStatusLogEntry, LegacyEmail, LegacySubmission, VerificationSession } from '@/lib/db';
 import { emailsByCase } from '@/lib/email';
+import { formatDateTime } from '@/lib/formatDate';
 import CheckList from '@/components/CheckList';
 import ClockFace from '@/components/ClockFace';
 import PageHeader from '@/components/PageHeader';
@@ -49,16 +50,6 @@ const STATUS_COLOR: Record<CaseStatus, CaseColor> = {
   verified: 'good',
   counterfeit: 'bad',
 };
-
-/**
- * SQLite's datetime('now') gives UTC as "YYYY-MM-DD HH:MM:SS" with no zone marker, which
- * `new Date()` would read as local time — so mark it as UTC before formatting. ISO strings
- * written by the app itself already carry their zone and pass through unchanged.
- */
-function formatDate(value: string): string {
-  const utc = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(value) ? `${value.replace(' ', 'T')}Z` : value;
-  return new Date(utc).toLocaleString('en-GB');
-}
 
 type CaseRow =
   | {
@@ -197,7 +188,7 @@ export default async function AdminPage({
                 </span>
               </div>
               <span className="flex shrink-0 items-center gap-4 text-xs text-neutral-500">
-                {formatDate(row.createdAt)}
+                {formatDateTime(row.createdAt)}
                 <span aria-hidden className="text-neutral-400 transition group-open:rotate-180">
                   ▾
                 </span>
@@ -285,7 +276,7 @@ function VerificationEvidence({
             ['Collection', session.collection],
             ['Base watch', session.base_watch],
             ['Flow', session.flow === 'dealer' ? 'Dealer' : 'Owner'],
-            ['Submitted', formatDate(session.created_at)],
+            ['Submitted', formatDateTime(session.created_at)],
           ]}
         />
       </div>
@@ -371,7 +362,7 @@ function LegacyEvidence({
                   ],
                 ] satisfies [string, React.ReactNode][])
               : []),
-            ['Submitted', formatDate(submission.created_at)],
+            ['Submitted', formatDateTime(submission.created_at)],
           ]}
         />
       </div>
@@ -445,7 +436,7 @@ function CaseFooter({
               {log.map((entry) => (
                 <li key={entry.id} className="text-sm">
                   <p className="text-xs text-neutral-500">
-                    {formatDate(entry.created_at)} · {entry.changed_by}
+                    {formatDateTime(entry.created_at)} · {entry.changed_by}
                   </p>
                   <p className="text-neutral-100">
                     {entry.from_status

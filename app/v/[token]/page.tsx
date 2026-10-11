@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import WatchCard from '@/components/WatchCard';
 import { CHALLENGE_WINDOW_TEXT, isExpired } from '@/lib/challenge';
+import { formatDateTime } from '@/lib/formatDate';
 import { findWatch, getSessionByToken } from '@/lib/sessions';
 
 export const dynamic = 'force-dynamic';
@@ -58,7 +59,7 @@ export default async function VerificationLinkPage({
             reading this confirmation on diw.com, not from the seller.
           </p>
           <p className="mt-4 text-xs uppercase tracking-widest2 text-neutral-500">
-            Link valid until {new Date(session.link_expires_at).toLocaleString('en-GB')}
+            Link valid until {formatDateTime(session.link_expires_at)}
           </p>
         </div>
 
