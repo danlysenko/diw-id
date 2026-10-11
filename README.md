@@ -21,7 +21,9 @@ Open http://localhost:3000.
 | --- | --- |
 | `DIW_ADMIN_KEY` | Staff key for the review queue at `/admin`. Until it is set, the queue is closed rather than unguarded. |
 | `DIW_ANALYZER` | `manual` (default) sends every submission to a human reviewer. `demo` auto-passes the image checks so the full flow can be walked without a vision provider. |
-| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM` | SMTP credentials for the "Send email" button on a Legacy case. Staff write and send each email by hand — nothing goes out automatically. The button stays disabled until all of `SMTP_HOST`, `SMTP_USER` and `SMTP_PASS` are set. |
+| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM` | SMTP credentials for the "Send email" button on a Legacy case and for staff notifications. Customers are only ever emailed by hand from admin. Email stays disabled until all of `SMTP_HOST`, `SMTP_USER` and `SMTP_PASS` are set. |
+| `ADMIN_NOTIFY_EMAIL` | Address(es), comma-separated, that receive the full details of every newly submitted case. Leave empty to turn notifications off. |
+| `APP_URL` | Public base URL of the site (e.g. `https://check.example.com`), used to make links in staff notifications clickable. |
 
 ### Seeded watches
 

@@ -23,6 +23,20 @@ function transport() {
 export type SendResult = { ok: true } | { ok: false; error: string };
 
 /**
+ * Tells staff about a new case. Best-effort: a failed or unconfigured notification must never
+ * fail the customer's submission, so errors are logged rather than thrown.
+ */
+export async function notifyStaff(subject: string, body: string): Promise<void> {
+  const to = process.env.ADMIN_NOTIFY_EMAIL;
+  if (!to || !emailEnabled()) return;
+  try {
+    await transport().sendMail({ from: process.env.SMTP_FROM || process.env.SMTP_USER, to, subject, text: body });
+  } catch (err) {
+    console.error('Staff notification failed:', err instanceof Error ? err.message : err);
+  }
+}
+
+/**
  * Sends one email and records the attempt (success or failure) against the case, so admin has a
  * full history even when delivery fails — the record is written either way.
  */

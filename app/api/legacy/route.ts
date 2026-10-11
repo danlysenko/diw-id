@@ -1,7 +1,8 @@
 import crypto from 'node:crypto';
-import { NextResponse } from 'next/server';
+import { after, NextResponse } from 'next/server';
+import { notifyNewLegacyCase } from '@/lib/caseNotifications';
 import { logStatusChange } from '@/lib/caseStatus';
-import { db } from '@/lib/db';
+import { db, type LegacySubmission } from '@/lib/db';
 import { describeOrigin } from '@/lib/geo';
 import { consumeLegacyChallenge } from '@/lib/sessions';
 import { isUploadError, storePhoto } from '@/lib/uploads';
@@ -76,7 +77,12 @@ export async function POST(request: Request) {
     challenge.challenge_minute,
   );
 
-  logStatusChange({ kind: 'legacy', caseId: id, from: null, to: 'new', by: 'Customer', note: describeOrigin(request) });
+  const origin = describeOrigin(request);
+  logStatusChange({ kind: 'legacy', caseId: id, from: null, to: 'new', by: 'Customer', note: origin });
+
+  // Sent after the response so the customer isn't kept waiting on SMTP.
+  const submission = db.prepare('SELECT * FROM legacy_submissions WHERE id = ?').get(id) as LegacySubmission;
+  after(() => notifyNewLegacyCase(submission, origin));
 
   return NextResponse.json({ caseId: id });
 }

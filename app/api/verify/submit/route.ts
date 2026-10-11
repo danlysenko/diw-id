@@ -1,4 +1,5 @@
-import { NextResponse } from 'next/server';
+import { after, NextResponse } from 'next/server';
+import { notifyNewVerification } from '@/lib/caseNotifications';
 import { db } from '@/lib/db';
 import { logStatusChange, verificationStatus } from '@/lib/caseStatus';
 import { runChecks } from '@/lib/checks';
@@ -80,6 +81,8 @@ export async function POST(request: Request) {
 
   if (outcome.status === 'passed') issueVerificationLink(sessionId);
 
+  const origin = describeOrigin(request);
+
   // First entry in the case's history: what the automatic checks decided on submission.
   logStatusChange({
     kind: 'verification',
@@ -87,8 +90,13 @@ export async function POST(request: Request) {
     from: null,
     to: verificationStatus(outcome.status),
     by: 'Automatic checks',
-    note: [describeOrigin(request), outcome.failReason].filter(Boolean).join(' · '),
+    note: [origin, outcome.failReason].filter(Boolean).join(' · '),
   });
+
+  const submitted = getSession(sessionId)!;
+  after(() =>
+    notifyNewVerification(submitted, watch, outcome.checks, [watchPhoto.publicPath, idPhoto.publicPath], origin),
+  );
 
   return NextResponse.json({ status: outcome.status });
 }
