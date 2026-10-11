@@ -11,14 +11,9 @@ function countryName(code: string): string {
   }
 }
 
-/** "IP 81.2.69.160 · London, United Kingdom" — looked up offline, the IP never leaves the server. */
+/** "From United Kingdom" — looked up offline, the IP never leaves the server and isn't stored. */
 export function describeOrigin(request: Request): string {
   const ip = clientIp(request);
-  if (ip === 'unknown') return 'IP unknown';
-
-  const geo = geoip.lookup(ip);
-  if (!geo || !geo.country) return `IP ${ip} · location unknown`;
-
-  const place = [geo.city, countryName(geo.country)].filter(Boolean).join(', ');
-  return `IP ${ip} · ${place}`;
+  const country = ip === 'unknown' ? null : geoip.lookup(ip)?.country;
+  return country ? `From ${countryName(country)}` : 'From unknown location';
 }
